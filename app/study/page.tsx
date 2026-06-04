@@ -3,38 +3,38 @@ import { ArrowRight, Calendar, Sparkles } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { getPowerpointsBySemester } from "@/lib/db/seed";
+import { TypingText } from "@/components/TypingText";
 
 export const metadata = {
   title: "Study Tool",
 };
 
+// Solid color theming — Sem 1 = green, Sem 2 = blue. No gradients.
 const semesters = [
   {
     n: 1,
     label: "Semester 1",
     blurb:
       "Foundations — business definition, SWOT, factors of production, market types, intro to micro & macro, marketing, pricing.",
-    accent: "linear-gradient(135deg, #8dc63f, #6fa832)",
-    accentBar: "#8dc63f",
-    glow: "rgba(141, 198, 63, 0.45)",
-    pillBg: "rgba(141, 198, 63, 0.1)",
-    pillBorder: "rgba(141, 198, 63, 0.4)",
-    pillText: "#8dc63f",
-    iconBg: "linear-gradient(135deg, #8dc63f, #2563a8)",
-    arrowText: "#0f2338",
+    accentBar: "#16a34a",
+    glow: "rgba(22, 163, 74, 0.45)",
+    pillBg: "rgba(22, 163, 74, 0.10)",
+    pillBorder: "rgba(22, 163, 74, 0.40)",
+    pillText: "#16a34a",
+    iconBg: "#16a34a",
+    arrowText: "#ffffff",
   },
   {
     n: 2,
     label: "Semester 2",
     blurb:
       "Application — supply & demand, business model canvas, market segmentation, fiscal policy, IP, game theory, workplace etiquette.",
-    accent: "linear-gradient(135deg, #2563a8, #1a5fa8)",
-    accentBar: "#2563a8",
-    glow: "rgba(37, 99, 168, 0.45)",
-    pillBg: "rgba(37, 99, 168, 0.1)",
-    pillBorder: "rgba(91, 163, 217, 0.4)",
-    pillText: "#5ba3d9",
-    iconBg: "linear-gradient(135deg, #2563a8, #5ba3d9)",
+    accentBar: "#1e40af",
+    glow: "rgba(30, 64, 175, 0.45)",
+    pillBg: "rgba(30, 64, 175, 0.10)",
+    pillBorder: "rgba(30, 64, 175, 0.40)",
+    pillText: "#1e40af",
+    iconBg: "#1e40af",
     arrowText: "#ffffff",
   },
 ] as const;
@@ -48,55 +48,39 @@ export default function StudyHomePage() {
   return (
     <>
       <Navbar />
-      <main className="relative min-h-screen overflow-hidden pt-32 pb-24" style={{ background: "#ffffff" }}>
-
+      <main className="surface-base relative min-h-screen overflow-hidden pt-32 pb-24">
         <div className="container">
           {/* Header */}
           <div className="mx-auto max-w-2xl text-center">
-            {/* Tesla STEM attribution above the badge */}
             <div className="mb-6 flex flex-col items-center gap-2">
               <img
                 src="/TeslaSTEMlogo.png"
                 alt="Tesla STEM High School"
                 className="h-12 w-12 object-contain"
               />
-              <span className="text-xs" style={{ color: "#6b7280" }}>
+              <span className="text-soft text-xs">
                 Nikola Tesla STEM High School
               </span>
             </div>
             <div
-              className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium"
+              className="text-mid inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium"
               style={{
-                color: "#374151",
-                border: "1px solid rgba(141, 198, 63, 0.4)",
-                background: "rgba(141, 198, 63, 0.08)",
+                border: "1px solid rgba(22, 163, 74, 0.40)",
+                background: "rgba(22, 163, 74, 0.08)",
               }}
             >
-              <Sparkles className="h-3.5 w-3.5" style={{ color: "#8dc63f" }} />
+              <Sparkles className="h-3.5 w-3.5" style={{ color: "#16a34a" }} />
               Study Tool · Tesla STEM
             </div>
-            <h1
-              className="mt-6 font-display text-5xl font-extrabold leading-[1.05] tracking-[-0.02em] text-balance md:text-6xl"
-              style={{ color: "#0a0a0a" }}
-            >
-              Pick your semester
-              <br />
-              <span
-                className="bg-clip-text text-transparent"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(135deg, #8dc63f 0%, #2563a8 100%)",
-                }}
-              >
-                to start studying.
-              </span>
-            </h1>
-            <p
-              className="mx-auto mt-5 max-w-xl text-balance text-base md:text-lg"
-              style={{ color: "#6b7280" }}
-            >
+            <TypingText
+              text="Pick your semester to start studying."
+              className="mt-6 font-display text-5xl font-extrabold leading-[1.05] tracking-[-0.02em] text-balance md:text-6xl bg-clip-text text-transparent pb-2"
+              style={{ backgroundImage: "linear-gradient(135deg, #16a34a 0%, #22d3ee 100%)" }}
+              cursorColor="#22d3ee"
+            />
+            <p className="text-soft mx-auto mt-5 max-w-xl text-balance text-base md:text-lg">
               Lecture decks are pre-loaded. Choose a semester to see every topic
-              extracted from this term's PowerPoints.
+              extracted from this term&apos;s PowerPoints.
             </p>
           </div>
 
@@ -106,7 +90,7 @@ export default function StudyHomePage() {
               <Link
                 key={s.n}
                 href={`/study/${s.n}`}
-                className="group relative isolate flex min-h-[360px] flex-col overflow-hidden rounded-3xl border bg-[#f9fafb] p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] border-[#e5e7eb] hover:border-[rgba(141,198,63,0.6)] md:min-h-[440px] md:p-10"
+                className="surface-card group relative isolate flex min-h-[360px] flex-col overflow-hidden rounded-3xl border-soft p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_32px_-8px_rgba(0,0,0,0.12)] md:min-h-[440px] md:p-10"
                 style={{
                   borderLeftWidth: "4px",
                   borderLeftColor: s.accentBar,
@@ -119,7 +103,7 @@ export default function StudyHomePage() {
                       className="flex h-14 w-14 items-center justify-center rounded-2xl text-white"
                       style={{
                         background: s.iconBg,
-                        boxShadow: "0 4px 14px rgba(141, 198, 63, 0.25)",
+                        boxShadow: `0 4px 14px ${s.glow}`,
                       }}
                     >
                       <Calendar className="h-6 w-6" />
@@ -138,35 +122,20 @@ export default function StudyHomePage() {
 
                   {/* Middle: title + blurb */}
                   <div className="mt-auto pt-12">
-                    <div
-                      className="font-mono text-[11px] uppercase tracking-[0.22em]"
-                      style={{ color: "#6b7280" }}
-                    >
-                      0{s.n}
-                    </div>
-                    <h2
-                      className="mt-3 font-display text-4xl font-bold tracking-tight md:text-5xl"
-                      style={{ color: "#0a0a0a" }}
-                    >
+                    <h2 className="text-strong font-display text-4xl font-bold tracking-tight md:text-5xl">
                       {s.label}
                     </h2>
-                    <p
-                      className="mt-3 max-w-md text-sm leading-relaxed md:text-[15px]"
-                      style={{ color: "#374151" }}
-                    >
+                    <p className="text-mid mt-3 max-w-md text-sm leading-relaxed md:text-[15px]">
                       {s.blurb}
                     </p>
                   </div>
 
-                  {/* Bottom: CTA row */}
+                  {/* Bottom: CTA row — clean inline, subtle top divider only */}
                   <div
-                    className="mt-7 flex items-center justify-between border-t pt-5"
-                    style={{ borderColor: "#e5e7eb" }}
+                    className="mt-7 flex items-center justify-between pt-5"
+                    style={{ borderTop: "1px solid hsl(var(--foreground) / 0.08)" }}
                   >
-                    <span
-                      className="text-xs font-medium"
-                      style={{ color: "#6b7280" }}
-                    >
+                    <span className="text-soft text-xs font-medium">
                       Browse topics
                     </span>
                     <span

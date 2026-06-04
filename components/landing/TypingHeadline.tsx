@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 const FULL_TEXT = "Welcome Tesla STEM Pythons";
 const INTERVAL_MS = 50;
 
-export function TypingHeadline() {
+export function TypingHeadline({ onDone }: { onDone?: () => void } = {}) {
   const [displayed, setDisplayed] = useState("");
   const [done, setDone] = useState(false);
 
@@ -13,6 +13,7 @@ export function TypingHeadline() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setDisplayed(FULL_TEXT);
       setDone(true);
+      onDone?.();
       return;
     }
 
@@ -23,6 +24,7 @@ export function TypingHeadline() {
       if (i === FULL_TEXT.length) {
         clearInterval(id);
         setDone(true);
+        onDone?.();
       }
     }, INTERVAL_MS);
 
@@ -38,8 +40,9 @@ export function TypingHeadline() {
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
           backgroundClip: "text",
-          display: "inline",
+          display: "inline-block",
           whiteSpace: "nowrap",
+          paddingBottom: "12px",
         }}
         aria-label={FULL_TEXT}
       >

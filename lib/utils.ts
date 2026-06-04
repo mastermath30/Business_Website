@@ -27,3 +27,11 @@ export function formatRelative(date: Date) {
 export function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
 }
+
+function normalizeOptionText(text: string) {
+  return text.replace(/\s+/g, " ").trim();
+}
+
+export function balanceQuizOptions(options: string[]) {
+  return options.map(normalizeOptionText);
+}

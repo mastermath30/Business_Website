@@ -3,19 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { getUser, saveUser } from "@/lib/localStorage";
-
-const field: React.CSSProperties = {
-  width: "100%",
-  padding: "10px 14px",
-  border: "1px solid #e5e7eb",
-  borderRadius: "10px",
-  fontSize: "15px",
-  color: "#0a0a0a",
-  background: "#ffffff",
-  outline: "none",
-  boxSizing: "border-box",
-};
+import { TypingText } from "@/components/TypingText";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -26,7 +16,7 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (getUser()) router.replace("/dashboard");
+    if (getUser()) router.replace("/study");
   }, [router]);
 
   function handleSubmit(e: React.FormEvent) {
@@ -46,191 +36,133 @@ export default function SignupPage() {
       email: email.trim().toLowerCase(),
       createdAt: new Date().toISOString(),
     });
-    router.push("/dashboard");
+    router.push("/study");
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#ffffff",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "24px",
-      }}
-    >
+    <div className="surface-base flex min-h-screen items-center justify-center px-6 py-10">
       <div
-        style={{
-          width: "100%",
-          maxWidth: "420px",
-          background: "#f9fafb",
-          border: "1px solid #e5e7eb",
-          borderRadius: "24px",
-          padding: "40px",
-        }}
+        aria-hidden
+        className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
       >
-        {/* Logo */}
         <div
+          className="absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full opacity-50 dark:opacity-30"
           style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: "8px",
-            marginBottom: "32px",
+            background:
+              "radial-gradient(circle, rgba(22,163,74,0.12) 0%, transparent 65%)",
+            filter: "blur(40px)",
           }}
-        >
+        />
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+        className="surface-card border-soft w-full max-w-md rounded-3xl p-10 shadow-soft"
+      >
+        <div className="mb-8 flex flex-col items-center gap-2">
           <img
             src="/TeslaSTEMlogo.png"
             alt="Tesla STEM"
-            style={{ height: "52px", width: "52px", objectFit: "contain" }}
+            style={{ height: 52, width: 52 }}
+            className="object-contain"
           />
-          <span style={{ fontSize: "12px", color: "#6b7280" }}>
-            Nikola Tesla STEM High School
-          </span>
+          <span className="text-soft text-xs">Nikola Tesla STEM High School</span>
         </div>
 
-        <h1
-          style={{
-            fontSize: "24px",
-            fontWeight: 700,
-            color: "#0a0a0a",
-            marginBottom: "8px",
-            textAlign: "center",
-          }}
-        >
-          Create your account
-        </h1>
-        <p
-          style={{
-            fontSize: "14px",
-            color: "#6b7280",
-            textAlign: "center",
-            marginBottom: "32px",
-          }}
-        >
+        <TypingText
+          text="Create your account"
+          className="text-strong mb-2 text-center text-2xl font-bold tracking-tight"
+        />
+        <p className="text-soft mb-8 text-center text-sm">
           Start studying smarter with BusinessBoost
         </p>
 
         <form
           onSubmit={handleSubmit}
-          style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+          className="flex flex-col gap-4"
         >
-          <div>
-            <label
-              style={{
-                display: "block",
-                fontSize: "13px",
-                fontWeight: 500,
-                color: "#374151",
-                marginBottom: "6px",
-              }}
-            >
-              Name
-            </label>
+          <FormField label="Name">
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your full name"
-              style={field}
+              className="field-base w-full rounded-xl px-4 py-2.5 text-[15px]"
             />
-          </div>
+          </FormField>
 
-          <div>
-            <label
-              style={{
-                display: "block",
-                fontSize: "13px",
-                fontWeight: 500,
-                color: "#374151",
-                marginBottom: "6px",
-              }}
-            >
-              Email
-            </label>
+          <FormField label="Email">
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              style={field}
+              className="field-base w-full rounded-xl px-4 py-2.5 text-[15px]"
             />
-          </div>
+          </FormField>
 
-          <div>
-            <label
-              style={{
-                display: "block",
-                fontSize: "13px",
-                fontWeight: 500,
-                color: "#374151",
-                marginBottom: "6px",
-              }}
-            >
-              Password
-            </label>
+          <FormField label="Password">
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="At least 6 characters"
-              style={field}
+              className="field-base w-full rounded-xl px-4 py-2.5 text-[15px]"
             />
-          </div>
+          </FormField>
 
           {error && (
-            <div
-              style={{
-                fontSize: "13px",
-                color: "#dc2626",
-                background: "#fef2f2",
-                border: "1px solid #fecaca",
-                borderRadius: "10px",
-                padding: "10px 14px",
-              }}
+            <motion.div
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-sm text-red-600 dark:text-red-400"
             >
               {error}
-            </div>
+            </motion.div>
           )}
 
-          <button
+          <motion.button
             type="submit"
             disabled={loading}
-            style={{
-              background: "#8dc63f",
-              color: "#0f2338",
-              border: "none",
-              borderRadius: "9999px",
-              padding: "12px 24px",
-              fontSize: "15px",
-              fontWeight: 600,
-              cursor: loading ? "not-allowed" : "pointer",
-              opacity: loading ? 0.7 : 1,
-              marginTop: "4px",
-            }}
+            whileHover={{ scale: loading ? 1 : 1.01 }}
+            whileTap={{ scale: loading ? 1 : 0.98 }}
+            transition={{ type: "spring", stiffness: 400, damping: 22 }}
+            className="btn-primary mt-1 px-6 py-3"
+            style={{ opacity: loading ? 0.7 : 1, cursor: loading ? "not-allowed" : "pointer" }}
           >
             {loading ? "Creating account…" : "Create account"}
-          </button>
+          </motion.button>
         </form>
 
-        <p
-          style={{
-            fontSize: "14px",
-            color: "#6b7280",
-            textAlign: "center",
-            marginTop: "24px",
-          }}
-        >
+        <p className="text-soft mt-6 text-center text-sm">
           Already have an account?{" "}
           <Link
             href="/login"
-            style={{ color: "#8dc63f", fontWeight: 600, textDecoration: "none" }}
+            className="font-semibold text-[#16a34a] hover:text-[#15803d] transition-colors"
           >
             Log in
           </Link>
         </p>
-      </div>
+      </motion.div>
+    </div>
+  );
+}
+
+function FormField({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label className="text-mid mb-1.5 block text-[13px] font-medium">
+        {label}
+      </label>
+      {children}
     </div>
   );
 }

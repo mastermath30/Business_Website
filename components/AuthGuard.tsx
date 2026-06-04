@@ -18,23 +18,12 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
   if (!ready) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#ffffff",
-        }}
-      >
+      <div className="surface-base flex min-h-screen items-center justify-center">
         <div
+          className="h-8 w-8 rounded-full border-[3px] animate-[bb-spin_0.8s_linear_infinite]"
           style={{
-            width: "32px",
-            height: "32px",
-            borderRadius: "50%",
-            border: "3px solid #e5e7eb",
-            borderTopColor: "#8dc63f",
-            animation: "bb-spin 0.8s linear infinite",
+            borderColor: "var(--surface-border)",
+            borderTopColor: "#16a34a",
           }}
         />
         <style>{`@keyframes bb-spin { to { transform: rotate(360deg); } }`}</style>

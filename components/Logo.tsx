@@ -26,18 +26,17 @@ export function Logo({
         <>
           <span
             aria-hidden
-            style={{
-              height: "28px",
-              width: "1px",
-              background: "rgba(0, 0, 0, 0.12)",
-              flexShrink: 0,
-            }}
+            className="bg-foreground/10 dark:bg-foreground/20"
+            style={{ height: "28px", width: "1px", flexShrink: 0 }}
           />
           <span
-            style={{ fontSize: "20px", fontWeight: 700, color: "#0a0a0a", lineHeight: 1, whiteSpace: "nowrap" }}
+            className="text-foreground"
+            style={{ fontSize: "20px", fontWeight: 700, lineHeight: 1, whiteSpace: "nowrap" }}
           >
             Business
-            <span style={{ color: "#6b7280", fontWeight: 700 }}>Boost</span>
+            <span className="text-muted-foreground" style={{ fontWeight: 700 }}>
+              Boost
+            </span>
           </span>
         </>
       )}

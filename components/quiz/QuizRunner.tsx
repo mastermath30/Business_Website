@@ -140,7 +140,7 @@ export function QuizRunner({
       <header className="sticky top-0 z-20 border-b border-border/60 bg-background/70 backdrop-blur-xl">
         <div className="container flex h-16 items-center justify-between gap-4">
           <Link
-            href="/dashboard/quizzes"
+            href="/study"
             className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border/60 bg-card/40 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             aria-label="Exit quiz"
           >
@@ -205,7 +205,7 @@ export function QuizRunner({
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
             className="pointer-events-none fixed left-1/2 top-1/2 z-30 -translate-x-1/2"
           >
-            <div className="rounded-full border border-brand-purple/30 bg-card/80 px-4 py-2 font-display text-2xl font-semibold text-gradient-brand shadow-glow backdrop-blur-xl">
+            <div className="rounded-full border border-[#16a34a]/30 bg-card/80 px-4 py-2 font-display text-2xl font-semibold text-[#16a34a] shadow-glow backdrop-blur-xl">
               +{showXP} XP
             </div>
           </motion.div>
@@ -351,7 +351,7 @@ function Stat({
 }) {
   const c = {
     amber: "text-amber-400 border-amber-400/20 bg-amber-400/5",
-    purple: "text-brand-purple border-brand-purple/20 bg-brand-purple/5",
+    purple: "text-[#16a34a] border-[#16a34a]/20 bg-[#16a34a]/5",
     muted: "text-muted-foreground border-border/60 bg-card/40",
   } as const;
   return (
@@ -412,7 +412,7 @@ function AnswerOption({
       >
         {letter}
       </span>
-      <span className="flex-1">{text}</span>
+      <span className="text-balance flex-1">{text}</span>
       <AnimatePresence>
         {correct && (
           <motion.span
@@ -490,7 +490,7 @@ function CompletionScreen({
             <Trophy className="h-9 w-9 text-white" />
           </motion.div>
           <h2 className="mt-6 font-display text-4xl font-semibold tracking-tight md:text-6xl">
-            <span className="text-gradient-brand">{grade}.</span>
+            <span className="text-[#16a34a]">{grade}.</span>
           </h2>
           <p className="mt-3 text-muted-foreground">
             You finished {topic.title} in {fmt(seconds)} with{" "}
@@ -512,9 +512,9 @@ function CompletionScreen({
               Retry
             </Button>
             <Button asChild variant="glass" size="lg">
-              <Link href="/dashboard">
+              <Link href="/study">
                 <Sparkles className="h-4 w-4" />
-                Back to dashboard
+                Back to study
               </Link>
             </Button>
           </div>
@@ -534,8 +534,8 @@ function ResultStat({
   accent: "purple" | "cyan" | "amber";
 }) {
   const map = {
-    purple: "from-brand-purple/30 to-brand-purple/0 border-brand-purple/30",
-    cyan: "from-brand-cyan/30 to-brand-cyan/0 border-brand-cyan/30",
+    purple: "from-[#16a34a]/30 to-[#16a34a]/0 border-[#16a34a]/30",
+    cyan: "from-[#22d3ee]/30 to-[#22d3ee]/0 border-[#22d3ee]/30",
     amber: "from-amber-400/30 to-amber-400/0 border-amber-400/30",
   } as const;
   return (
@@ -548,7 +548,7 @@ function ResultStat({
         map[accent]
       )}
     >
-      <div className="font-display text-3xl font-semibold tracking-tight text-gradient-brand">
+      <div className="font-display text-3xl font-semibold tracking-tight text-[#16a34a]">
         {value}
       </div>
       <div className="mt-1 text-xs text-muted-foreground">{label}</div>

@@ -1,5 +1,6 @@
 import { questions, topics } from "./data";
 import type { Question, Topic } from "./types";
+import { balanceQuizOptions } from "./utils";
 
 const fallbackTemplates: Omit<Question, "id" | "topicId">[] = [
   {
@@ -92,7 +93,9 @@ export function getTopic(id: string): Topic | undefined {
 
 export function getQuestionsForTopic(topicId: string, count = 8): Question[] {
   const real = questions.filter((q) => q.topicId === topicId);
-  if (real.length >= count) return real.slice(0, count);
+  const normalize = (list: Question[]) =>
+    list.map((q) => ({ ...q, options: balanceQuizOptions(q.options) }));
+  if (real.length >= count) return normalize(real.slice(0, count));
   const padded: Question[] = [...real];
   let i = 0;
   while (padded.length < count) {
@@ -104,5 +107,5 @@ export function getQuestionsForTopic(topicId: string, count = 8): Question[] {
     });
     i += 1;
   }
-  return padded;
+  return normalize(padded);
 }

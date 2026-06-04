@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
-  ArrowRight,
   CheckCircle2,
   Loader2,
   RotateCcw,
@@ -67,6 +66,7 @@ export function StudyQuizRunner({ topic, pool, mode }: RunnerProps) {
   const [done, setDone] = useState(false);
   const [savedSeen, setSavedSeen] = useState(false);
   const [savedSession, setSavedSession] = useState(false);
+  const [shake, setShake] = useState(false);
   const totalCount = questions?.length ?? 0;
   const examSeconds = totalCount * 60;
   const [timeLeft, setTimeLeft] = useState(0);
@@ -104,6 +104,10 @@ export function StudyQuizRunner({ topic, pool, mode }: RunnerProps) {
       if (!q) return;
       if (answers[q.id]) return;
       setAnswers((a) => ({ ...a, [q.id]: letter }));
+      if (letter !== q.correct_answer) {
+        setShake(true);
+        setTimeout(() => setShake(false), 500);
+      }
     },
     [q, answers]
   );
@@ -123,12 +127,14 @@ export function StudyQuizRunner({ topic, pool, mode }: RunnerProps) {
     setIndex((i) => Math.max(0, i - 1));
   }, []);
 
+  // Keyboard shortcuts: A/B/C/D to select, Enter/→ to advance, ← to go back
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (done || !questions) return;
-      if (["1", "2", "3", "4"].includes(e.key)) {
+      const key = e.key.toUpperCase();
+      if (["A", "B", "C", "D"].includes(key)) {
         e.preventDefault();
-        select(LETTERS[parseInt(e.key) - 1]);
+        select(key as AnswerLetter);
       } else if (e.key === "Enter" || e.key === "ArrowRight") {
         if (!current) return;
         goNext();
@@ -151,8 +157,7 @@ export function StudyQuizRunner({ topic, pool, mode }: RunnerProps) {
 
   useEffect(() => {
     if (!done || !questions || savedSession) return;
-    const score = questions.filter((q) => answers[q.id] === q.correct_answer)
-      .length;
+    const score = questions.filter((q) => answers[q.id] === q.correct_answer).length;
     addSession({
       lessonKey: topic.id,
       lessonTitle: topic.topic_name,
@@ -173,6 +178,7 @@ export function StudyQuizRunner({ topic, pool, mode }: RunnerProps) {
     setSavedSeen(false);
     setSavedSession(false);
     setDirection(1);
+    setShake(false);
     if (mode === "exam") {
       setTimeLeft(examSeconds);
     } else {
@@ -188,16 +194,12 @@ export function StudyQuizRunner({ topic, pool, mode }: RunnerProps) {
     }
   };
 
-  // ── Loading ─────────────────────────────────────────────────────────────
   if (!questions) {
     return (
-      <div className="relative min-h-screen overflow-hidden">
+      <div className="relative min-h-screen overflow-hidden bg-zinc-50 dark:bg-zinc-950">
         <QuizBackground />
         <div className="flex min-h-screen items-center justify-center">
-          <div
-            className="flex items-center gap-3 text-sm"
-            style={{ color: "#6b7280" }}
-          >
+          <div className="flex items-center gap-3 text-sm text-zinc-500">
             <Loader2 className="h-4 w-4 animate-spin" />
             Preparing your quiz…
           </div>
@@ -226,93 +228,66 @@ export function StudyQuizRunner({ topic, pool, mode }: RunnerProps) {
   const isCorrect = current && current === q.correct_answer;
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden bg-zinc-50 dark:bg-zinc-950">
       <QuizBackground />
 
       {/* Sticky header */}
-      <header
-        className="sticky top-0 z-30 border-b"
-        style={{
-          background: "rgba(255, 255, 255, 0.72)",
-          backdropFilter: "blur(20px) saturate(160%)",
-          WebkitBackdropFilter: "blur(20px) saturate(160%)",
-          borderColor: "rgba(0, 0, 0, 0.06)",
-        }}
-      >
+      <header className="header-glass sticky top-0 z-30">
         <div className="container flex h-[68px] items-center gap-4">
           <Link
             href={`/study/${topic.semester}/${encodeURIComponent(topic.id)}`}
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all hover:scale-105"
-            style={{
-              background: "#ffffff",
-              border: "1px solid #e5e7eb",
-              color: "#6b7280",
-              boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
-            }}
+            className="text-soft surface-elevated inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all hover:scale-105 hover:text-foreground"
             aria-label="Exit quiz"
           >
             <X className="h-4 w-4" />
           </Link>
 
           <div className="hidden flex-col leading-tight md:flex">
-            <span
-              className="truncate text-sm font-semibold"
-              style={{ color: "#0a0a0a" }}
-            >
+            <span className="text-strong truncate text-sm font-semibold">
               {topic.topic_name}
             </span>
             <span
               className="text-[11px] font-medium uppercase tracking-[0.14em]"
-              style={{ color: "#8dc63f" }}
+              style={{ color: "#16a34a" }}
             >
               {isStudy ? "Study mode" : "Final exam"} · Sem {topic.semester}
             </span>
           </div>
 
           <div className="flex flex-1 items-center gap-3">
-            {/* Thicker animated gradient progress */}
-            <div
-              className="relative h-2.5 w-full overflow-hidden rounded-full"
-              style={{ background: "rgba(0, 0, 0, 0.06)" }}
-            >
+            <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-foreground/[0.07] dark:bg-white/[0.06]">
               <motion.div
                 initial={false}
                 animate={{ width: `${progress}%` }}
                 transition={{ duration: 0.55, ease: EASE }}
                 className="absolute inset-y-0 left-0 rounded-full"
                 style={{
-                  background:
-                    "linear-gradient(90deg, #8dc63f 0%, #5ba3d9 60%, #2563a8 100%)",
-                  boxShadow: "0 0 14px rgba(141, 198, 63, 0.45)",
+                  background: "linear-gradient(90deg, #16a34a 0%, #22d3ee 100%)",
+                  boxShadow: "0 0 14px rgba(22, 163, 74, 0.45)",
                 }}
               />
             </div>
-            <span
-              className="font-mono text-xs font-bold tabular-nums"
-              style={{ color: "#374151" }}
-            >
+            <span className="text-mid font-mono text-xs font-bold tabular-nums">
               {index + 1}
-              <span style={{ color: "#9ca3af" }}>/{questions.length}</span>
+              <span className="text-soft">/{questions.length}</span>
             </span>
           </div>
 
           {!isStudy && (
             <div
-              className={cn(
-                "hidden items-center rounded-full px-3 py-1.5 font-mono text-xs font-bold tabular-nums sm:inline-flex"
-              )}
+              className="hidden items-center rounded-full px-3 py-1.5 font-mono text-xs font-bold tabular-nums sm:inline-flex"
               style={
                 timeLeft < 60
                   ? {
                       border: "1px solid rgba(239, 68, 68, 0.5)",
-                      background: "#fef2f2",
+                      background: "rgba(239, 68, 68, 0.08)",
                       color: "#ef4444",
                       boxShadow: "0 0 12px rgba(239, 68, 68, 0.18)",
                     }
                   : {
-                      background: "rgba(141, 198, 63, 0.12)",
-                      border: "1px solid rgba(141, 198, 63, 0.45)",
-                      color: "#6fa832",
+                      background: "rgba(22, 163, 74, 0.10)",
+                      border: "1px solid rgba(22, 163, 74, 0.45)",
+                      color: "#16a34a",
                     }
               }
               title="Time remaining"
@@ -323,48 +298,41 @@ export function StudyQuizRunner({ topic, pool, mode }: RunnerProps) {
         </div>
       </header>
 
-      <main className="relative flex min-h-[calc(100vh-68px)] items-start justify-center px-4 pt-10 pb-40 md:pt-16">
+      <main className="relative flex min-h-[calc(100vh-68px)] items-start justify-center px-4 pt-10 pb-16 md:pt-14">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.section
             key={q.id}
             custom={direction}
-            initial={{ opacity: 0, x: direction > 0 ? 60 : -60, y: 8 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            exit={{ opacity: 0, x: direction > 0 ? -50 : 50, y: 0 }}
-            transition={{ duration: 0.45, ease: EASE }}
-            className="relative w-full max-w-3xl"
+            initial={{ opacity: 0, x: direction > 0 ? 40 : -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: direction > 0 ? -30 : 30 }}
+            transition={{ duration: 0.25, ease: EASE }}
+            className="w-full max-w-2xl"
             style={{ willChange: "transform, opacity" }}
           >
-            {/* Frosted glass card */}
-            <div
-              className="relative overflow-hidden rounded-[28px] p-7 md:p-12"
-              style={{
-                background: "rgba(255, 255, 255, 0.78)",
-                backdropFilter: "blur(24px) saturate(160%)",
-                WebkitBackdropFilter: "blur(24px) saturate(160%)",
-                border: "1px solid rgba(0, 0, 0, 0.06)",
-                boxShadow:
-                  "0 24px 60px -16px rgba(15, 35, 56, 0.18), 0 6px 18px rgba(15, 35, 56, 0.06)",
-              }}
+            {/* Card — shakes on incorrect answer */}
+            <motion.div
+              animate={shake ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
+              transition={{ duration: 0.4 }}
+              className="rounded-3xl border border-zinc-200 bg-white p-8 shadow-lg dark:border-zinc-800 dark:bg-zinc-900 md:p-10"
             >
-              {/* Stylized Q-number pill */}
+              {/* Question number pill */}
               <motion.div
                 initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.05, ease: EASE }}
-                className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5"
+                className="mb-6 inline-flex items-center gap-2 rounded-full px-3.5 py-1.5"
                 style={{
-                  background:
-                    "linear-gradient(135deg, rgba(141,198,63,0.18) 0%, rgba(37,99,168,0.14) 100%)",
-                  border: "1px solid rgba(141, 198, 63, 0.45)",
-                  color: "#6fa832",
+                  background: "rgba(22, 163, 74, 0.12)",
+                  border: "1px solid rgba(22, 163, 74, 0.40)",
+                  color: "#16a34a",
                 }}
               >
                 <span
                   className="h-1.5 w-1.5 rounded-full"
                   style={{
-                    background: "#8dc63f",
-                    boxShadow: "0 0 8px rgba(141, 198, 63, 0.8)",
+                    background: "#16a34a",
+                    boxShadow: "0 0 8px rgba(22, 163, 74, 0.8)",
                   }}
                 />
                 <span className="font-mono text-[11px] font-bold uppercase tracking-[0.14em]">
@@ -372,37 +340,34 @@ export function StudyQuizRunner({ topic, pool, mode }: RunnerProps) {
                 </span>
               </motion.div>
 
-              {/* Question text — XL bold */}
+              {/* Question text */}
               <motion.h2
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.55, delay: 0.1, ease: EASE }}
-                className="mt-6 font-display text-3xl font-bold leading-[1.18] tracking-[-0.01em] text-balance md:text-4xl lg:text-[44px]"
-                style={{ color: "#0a0a0a" }}
+                className="mb-8 mt-6 text-balance text-xl font-semibold leading-snug tracking-tight text-zinc-900 dark:text-white md:text-2xl"
               >
                 {q.question}
               </motion.h2>
 
-              {/* Options — staggered */}
+              {/* Answer options */}
               <motion.div
                 initial="hidden"
                 animate="visible"
                 variants={{
                   hidden: {},
                   visible: {
-                    transition: { staggerChildren: 0.07, delayChildren: 0.18 },
+                    transition: { staggerChildren: 0.05, delayChildren: 0.18 },
                   },
                 }}
-                className="mt-8 grid gap-3 md:mt-10"
+                className="space-y-3"
               >
                 {optionsOf(q).map((text, i) => {
                   const letter = LETTERS[i];
                   const isSelected = current === letter;
                   const isCorrectChoice = letter === q.correct_answer;
-                  const reveal = showFeedback;
-                  const correctState = reveal && isCorrectChoice;
-                  const incorrectState =
-                    reveal && isSelected && !isCorrectChoice;
+                  const correctState = showFeedback && isCorrectChoice;
+                  const incorrectState = showFeedback && isSelected && !isCorrectChoice;
                   return (
                     <AnswerOption
                       key={letter}
@@ -418,7 +383,12 @@ export function StudyQuizRunner({ topic, pool, mode }: RunnerProps) {
                 })}
               </motion.div>
 
-              {/* Explanation reveal */}
+              {/* Keyboard hint — hidden on touch devices */}
+              <p className="mt-4 hidden text-center text-xs text-zinc-400 md:block">
+                Press A, B, C, or D to select
+              </p>
+
+              {/* Feedback explanation */}
               <AnimatePresence>
                 {showFeedback && (
                   <motion.div
@@ -433,80 +403,60 @@ export function StudyQuizRunner({ topic, pool, mode }: RunnerProps) {
                       style={
                         isCorrect
                           ? {
-                              border: "1px solid rgba(141, 198, 63, 0.5)",
-                              background:
-                                "linear-gradient(135deg, rgba(141,198,63,0.10) 0%, rgba(141,198,63,0.04) 100%)",
+                              border: "1px solid rgba(22, 163, 74, 0.45)",
+                              background: "rgba(22, 163, 74, 0.07)",
                             }
                           : {
-                              border: "1px solid rgba(239, 68, 68, 0.45)",
-                              background:
-                                "linear-gradient(135deg, rgba(254,242,242,1) 0%, rgba(254,226,226,0.6) 100%)",
+                              border: "1px solid rgba(239, 68, 68, 0.40)",
+                              background: "rgba(239, 68, 68, 0.07)",
                             }
                       }
                     >
                       <div className="flex items-center gap-2 text-sm font-semibold">
                         {isCorrect ? (
                           <>
-                            <CheckCircle2
-                              className="h-4 w-4"
-                              style={{ color: "#6fa832" }}
-                            />
-                            <span style={{ color: "#6fa832" }}>Correct.</span>
+                            <CheckCircle2 className="h-4 w-4" style={{ color: "#16a34a" }} />
+                            <span style={{ color: "#16a34a" }}>Correct.</span>
                           </>
                         ) : (
                           <>
-                            <X
-                              className="h-4 w-4"
-                              style={{ color: "#ef4444" }}
-                            />
-                            <span style={{ color: "#dc2626" }}>
-                              Not quite — the right answer is{" "}
-                              {q.correct_answer}.
+                            <X className="h-4 w-4" style={{ color: "#ef4444" }} />
+                            <span style={{ color: "#ef4444" }}>
+                              Not quite — the right answer is {q.correct_answer}.
                             </span>
                           </>
                         )}
                       </div>
-                      <p
-                        className="mt-2 text-sm leading-relaxed"
-                        style={{ color: "#374151" }}
-                      >
+                      <p className="text-mid mt-2 text-sm leading-relaxed">
                         {q.explanation}
                       </p>
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
-            </div>
 
-            {/* Floating action row — Prev (ghost) + Next (prominent) */}
-            <div className="mt-7 flex items-center justify-between">
-              {index > 0 ? (
-                <motion.button
-                  whileHover={{ x: -2 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={goPrev}
-                  className="inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-sm font-medium transition-colors"
-                  style={{ color: "#6b7280" }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.color = "#0a0a0a")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.color = "#6b7280")
-                  }
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Previous
-                </motion.button>
-              ) : (
-                <span />
-              )}
-
-              <NextButton
-                disabled={!current}
-                isFinal={index === questions.length - 1}
+              {/* Full-width next button */}
+              <button
                 onClick={goNext}
-              />
-            </div>
+                disabled={!current}
+                className="mt-6 w-full rounded-xl bg-emerald-500 py-3.5 text-sm font-semibold text-white transition-all hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {index === questions.length - 1 ? "See results →" : "Next question →"}
+              </button>
+            </motion.div>
+
+            {/* Previous button below card */}
+            {index > 0 && (
+              <motion.button
+                whileHover={{ x: -2 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={goPrev}
+                className="mt-4 flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Previous
+              </motion.button>
+            )}
           </motion.section>
         </AnimatePresence>
       </main>
@@ -514,20 +464,17 @@ export function StudyQuizRunner({ topic, pool, mode }: RunnerProps) {
   );
 }
 
-// ── Ambient background ──────────────────────────────────────────────────────
-
 function QuizBackground() {
   return (
     <div
       className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
       aria-hidden
     >
-      <div className="absolute inset-0" style={{ background: "#fafbfc" }} />
       <motion.div
         className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full"
         style={{
           background:
-            "radial-gradient(circle, rgba(141,198,63,0.22) 0%, rgba(141,198,63,0) 65%)",
+            "radial-gradient(circle, rgba(22,163,74,0.16) 0%, rgba(22,163,74,0) 65%)",
           filter: "blur(8px)",
         }}
         animate={{ x: [0, 30, 0], y: [0, 22, 0] }}
@@ -537,29 +484,15 @@ function QuizBackground() {
         className="absolute -bottom-44 -right-40 h-[600px] w-[600px] rounded-full"
         style={{
           background:
-            "radial-gradient(circle, rgba(37,99,168,0.18) 0%, rgba(37,99,168,0) 65%)",
+            "radial-gradient(circle, rgba(34,211,238,0.12) 0%, rgba(34,211,238,0) 65%)",
           filter: "blur(10px)",
         }}
         animate={{ x: [0, -28, 0], y: [0, -32, 0] }}
         transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
       />
-      <div
-        className="absolute inset-0 opacity-[0.45]"
-        style={{
-          backgroundImage:
-            "radial-gradient(rgba(15, 35, 56, 0.06) 1px, transparent 1px)",
-          backgroundSize: "26px 26px",
-          maskImage:
-            "radial-gradient(ellipse 80% 70% at 50% 40%, #000 30%, transparent 80%)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse 80% 70% at 50% 40%, #000 30%, transparent 80%)",
-        }}
-      />
     </div>
   );
 }
-
-// ── Answer option tile ──────────────────────────────────────────────────────
 
 function AnswerOption({
   letter,
@@ -578,139 +511,46 @@ function AnswerOption({
   locked?: boolean;
   onClick?: () => void;
 }) {
-  const interactive = !locked && !correct && !incorrect && !selected;
-
-  let containerStyle: React.CSSProperties = {
-    background: "rgba(255, 255, 255, 0.85)",
-    border: "1.5px solid #e5e7eb",
-    boxShadow: "0 1px 2px rgba(15, 35, 56, 0.03)",
-  };
-  if (correct) {
-    containerStyle = {
-      background:
-        "linear-gradient(135deg, rgba(141,198,63,0.12) 0%, rgba(141,198,63,0.06) 100%)",
-      border: "1.5px solid #8dc63f",
-      boxShadow: "0 0 0 4px rgba(141, 198, 63, 0.15)",
-    };
-  } else if (incorrect) {
-    containerStyle = {
-      background:
-        "linear-gradient(135deg, rgba(239,68,68,0.10) 0%, rgba(239,68,68,0.04) 100%)",
-      border: "1.5px solid #ef4444",
-      boxShadow: "0 0 0 4px rgba(239, 68, 68, 0.12)",
-    };
-  } else if (selected) {
-    containerStyle = {
-      background: "rgba(141, 198, 63, 0.10)",
-      border: "1.5px solid #8dc63f",
-      boxShadow: "0 0 0 4px rgba(141, 198, 63, 0.12)",
-    };
-  }
-
-  let badgeStyle: React.CSSProperties = {
-    background: "#ffffff",
-    border: "1.5px solid #e5e7eb",
-    color: "#374151",
-  };
-  if (correct) {
-    badgeStyle = {
-      background: "linear-gradient(135deg, #8dc63f 0%, #6fa832 100%)",
-      border: "1.5px solid transparent",
-      color: "#ffffff",
-      boxShadow: "0 4px 12px rgba(141, 198, 63, 0.40)",
-    };
-  } else if (incorrect) {
-    badgeStyle = {
-      background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
-      border: "1.5px solid transparent",
-      color: "#ffffff",
-      boxShadow: "0 4px 12px rgba(239, 68, 68, 0.40)",
-    };
-  } else if (selected) {
-    badgeStyle = {
-      background: "linear-gradient(135deg, #8dc63f 0%, #6fa832 100%)",
-      border: "1.5px solid transparent",
-      color: "#ffffff",
-      boxShadow: "0 4px 12px rgba(141, 198, 63, 0.40)",
-    };
-  }
-
-  const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!interactive) return;
-    e.currentTarget.style.background = "rgba(141, 198, 63, 0.06)";
-    e.currentTarget.style.borderColor = "#8dc63f";
-    e.currentTarget.style.boxShadow = "0 8px 24px -10px rgba(141, 198, 63, 0.45)";
-    const badge = e.currentTarget.querySelector(
-      "[data-letter-badge]"
-    ) as HTMLElement | null;
-    if (badge) {
-      badge.style.background =
-        "linear-gradient(135deg, #8dc63f 0%, #6fa832 100%)";
-      badge.style.borderColor = "transparent";
-      badge.style.color = "#ffffff";
-      badge.style.boxShadow = "0 4px 12px rgba(141, 198, 63, 0.35)";
-    }
-  };
-  const handleMouseLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!interactive) return;
-    e.currentTarget.style.background = "rgba(255, 255, 255, 0.85)";
-    e.currentTarget.style.borderColor = "#e5e7eb";
-    e.currentTarget.style.boxShadow = "0 1px 2px rgba(15, 35, 56, 0.03)";
-    const badge = e.currentTarget.querySelector(
-      "[data-letter-badge]"
-    ) as HTMLElement | null;
-    if (badge) {
-      badge.style.background = "#ffffff";
-      badge.style.borderColor = "#e5e7eb";
-      badge.style.color = "#374151";
-      badge.style.boxShadow = "none";
-    }
-  };
-
   return (
     <motion.button
       variants={{
         hidden: { opacity: 0, y: 16 },
-        visible: {
-          opacity: 1,
-          y: 0,
-          transition: { duration: 0.45, ease: EASE },
-        },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: EASE } },
       }}
-      whileHover={interactive ? { scale: 1.015, y: -2 } : undefined}
-      whileTap={!locked ? { scale: 0.985 } : undefined}
-      transition={{ type: "spring", stiffness: 380, damping: 25 }}
       onClick={onClick}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
       disabled={locked}
-      className="group relative flex w-full items-center gap-5 rounded-2xl px-5 py-5 text-left text-[15px] transition-[background,border-color,box-shadow] duration-200 ease-out disabled:cursor-default md:px-6 md:py-6 md:text-base"
-      style={{
-        ...containerStyle,
-        willChange: "transform",
-      }}
+      className={cn(
+        "flex w-full items-center gap-4 rounded-xl border px-5 py-4 text-left text-sm font-medium transition-all duration-150 disabled:cursor-default",
+        correct
+          ? "border-emerald-500 bg-emerald-50 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-100"
+          : incorrect
+          ? "border-red-400 bg-red-50 text-red-900 dark:bg-red-950/50 dark:text-red-100"
+          : selected
+          ? "border-emerald-500 bg-emerald-50 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-100"
+          : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:border-zinc-500 dark:hover:bg-zinc-700"
+      )}
     >
       <span
-        data-letter-badge
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl font-display text-base font-bold transition-all duration-200 md:h-12 md:w-12 md:text-lg"
-        style={badgeStyle}
+        className={cn(
+          "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold",
+          correct || selected
+            ? "bg-emerald-500 text-white"
+            : incorrect
+            ? "bg-red-400 text-white"
+            : "bg-zinc-100 text-zinc-500 dark:bg-zinc-700 dark:text-zinc-400"
+        )}
       >
         {letter}
       </span>
-      <span
-        className="flex-1 text-[15px] font-medium leading-snug md:text-base"
-        style={{ color: "#0a0a0a" }}
-      >
-        {text}
-      </span>
+      <span className="text-balance flex-1 leading-snug">{text}</span>
       <AnimatePresence>
         {correct && (
           <motion.span
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0 }}
-            transition={SPRING_BTN}
-            style={{ color: "#6fa832" }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            style={{ color: "#16a34a" }}
           >
             <CheckCircle2 className="h-5 w-5" />
           </motion.span>
@@ -720,7 +560,7 @@ function AnswerOption({
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0 }}
-            transition={SPRING_BTN}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
             style={{ color: "#ef4444" }}
           >
             <X className="h-5 w-5" />
@@ -730,46 +570,6 @@ function AnswerOption({
     </motion.button>
   );
 }
-
-// ── Next / Finish button ────────────────────────────────────────────────────
-
-function NextButton({
-  disabled,
-  isFinal,
-  onClick,
-}: {
-  disabled: boolean;
-  isFinal: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <motion.button
-      whileHover={!disabled ? { scale: 1.04, y: -1 } : undefined}
-      whileTap={!disabled ? { scale: 0.97 } : undefined}
-      transition={SPRING_BTN}
-      onClick={onClick}
-      disabled={disabled}
-      className={cn(
-        "group relative inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-base font-semibold transition-opacity duration-200",
-        disabled && "cursor-not-allowed opacity-40"
-      )}
-      style={{
-        background:
-          "linear-gradient(135deg, #8dc63f 0%, #6fa832 60%, #2563a8 140%)",
-        color: "#0f2338",
-        boxShadow: disabled
-          ? "none"
-          : "0 12px 28px -8px rgba(141, 198, 63, 0.6), 0 4px 10px rgba(141, 198, 63, 0.25)",
-        willChange: "transform",
-      }}
-    >
-      {isFinal ? "Finish" : "Next"}
-      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-    </motion.button>
-  );
-}
-
-// ── Results Screen ──────────────────────────────────────────────────────────
 
 function Completion({
   topic,
@@ -794,28 +594,16 @@ function Completion({
 
   const band =
     correct >= 7
-      ? {
-          ring: "#8dc63f",
-          glow: "rgba(141, 198, 63, 0.45)",
-          label: "Strong work",
-        }
+      ? { ring: "#16a34a", glow: "rgba(22, 163, 74, 0.45)", label: "Strong work" }
       : correct >= 5
-        ? {
-            ring: "#f59e0b",
-            glow: "rgba(245, 158, 11, 0.45)",
-            label: "Solid",
-          }
-        : {
-            ring: "#ef4444",
-            glow: "rgba(239, 68, 68, 0.45)",
-            label: "Keep going",
-          };
+      ? { ring: "#f59e0b", glow: "rgba(245, 158, 11, 0.45)", label: "Solid" }
+      : { ring: "#ef4444", glow: "rgba(239, 68, 68, 0.45)", label: "Keep going" };
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className="surface-base relative min-h-screen overflow-hidden">
       <QuizBackground />
 
-      <main className="container relative pt-20 pb-20">
+      <main className="container relative pb-20 pt-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -825,27 +613,21 @@ function Completion({
           <div className="text-center">
             <div
               className="text-xs font-semibold uppercase tracking-[0.22em]"
-              style={{ color: "#8dc63f" }}
+              style={{ color: "#16a34a" }}
             >
               Quiz complete
             </div>
-            <h1
-              className="mt-4 font-display text-4xl font-extrabold tracking-tight md:text-5xl"
-              style={{ color: "#0a0a0a" }}
-            >
+            <h1 className="text-strong mt-4 font-display text-4xl font-extrabold tracking-tight md:text-5xl">
               {band.label}.
             </h1>
-            <p
-              className="mt-3 text-sm md:text-base"
-              style={{ color: "#6b7280" }}
-            >
+            <p className="text-soft mt-3 text-sm md:text-base">
               You completed{" "}
-              <span style={{ color: "#0a0a0a" }}>{topic.topic_name}</span>
+              <span className="text-strong">{topic.topic_name}</span>
               {seconds > 0 && (
                 <>
                   {" "}
                   in{" "}
-                  <span style={{ color: "#0a0a0a", fontWeight: 600 }}>
+                  <span className="text-strong font-semibold">
                     {fmt(seconds)}
                   </span>
                 </>
@@ -855,10 +637,10 @@ function Completion({
             {rotationReset && (
               <p
                 className="mx-auto mt-3 max-w-md text-xs"
-                style={{ color: "#6fa832" }}
+                style={{ color: "#16a34a" }}
               >
-                You&apos;ve now seen every question in this topic. The pool
-                just reset — your next round will draw fresh.
+                You&apos;ve now seen every question in this topic. The pool just
+                reset — your next round will draw fresh.
               </p>
             )}
           </div>
@@ -873,10 +655,7 @@ function Completion({
           </div>
 
           <div className="mt-12">
-            <div
-              className="mb-4 text-xs font-semibold uppercase tracking-[0.22em]"
-              style={{ color: "#6b7280" }}
-            >
+            <div className="text-soft mb-4 text-xs font-semibold uppercase tracking-[0.22em]">
               Review · {total} questions
             </div>
             <ul className="space-y-2">
@@ -888,21 +667,17 @@ function Completion({
                     key={q.id}
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.3,
-                      delay: 0.05 * i,
-                      ease: EASE,
-                    }}
+                    transition={{ duration: 0.3, delay: 0.05 * i, ease: EASE }}
                     className="flex items-start gap-3 rounded-xl border p-4"
                     style={
                       ok
                         ? {
-                            borderColor: "#8dc63f",
-                            background: "#f0fdf4",
+                            borderColor: "rgba(22, 163, 74, 0.45)",
+                            background: "rgba(22, 163, 74, 0.06)",
                           }
                         : {
-                            borderColor: "#ef4444",
-                            background: "#fef2f2",
+                            borderColor: "rgba(239, 68, 68, 0.45)",
+                            background: "rgba(239, 68, 68, 0.05)",
                           }
                     }
                   >
@@ -910,14 +685,8 @@ function Completion({
                       className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
                       style={
                         ok
-                          ? {
-                              background: "rgba(141, 198, 63, 0.22)",
-                              color: "#6fa832",
-                            }
-                          : {
-                              background: "rgba(239, 68, 68, 0.18)",
-                              color: "#dc2626",
-                            }
+                          ? { background: "rgba(22, 163, 74, 0.18)", color: "#16a34a" }
+                          : { background: "rgba(239, 68, 68, 0.16)", color: "#ef4444" }
                       }
                     >
                       {ok ? (
@@ -927,35 +696,18 @@ function Completion({
                       )}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <div
-                        className="text-sm leading-snug"
-                        style={{ color: "#0a0a0a" }}
-                      >
-                        <span
-                          className="font-mono text-xs"
-                          style={{ color: "#6b7280" }}
-                        >
-                          Q{i + 1}.
-                        </span>{" "}
+                      <div className="text-strong text-sm leading-snug">
+                        <span className="text-soft font-mono text-xs">Q{i + 1}.</span>{" "}
                         {q.question}
                       </div>
                       {!ok && (
-                        <div
-                          className="mt-1.5 text-xs"
-                          style={{ color: "#374151" }}
-                        >
+                        <div className="text-mid mt-1.5 text-xs">
                           You answered{" "}
-                          <span
-                            className="font-mono"
-                            style={{ color: "#dc2626" }}
-                          >
+                          <span className="font-mono" style={{ color: "#ef4444" }}>
                             {ans ?? "—"}
                           </span>
                           . Correct answer:{" "}
-                          <span
-                            className="font-mono"
-                            style={{ color: "#6fa832" }}
-                          >
+                          <span className="font-mono" style={{ color: "#16a34a" }}>
                             {q.correct_answer}
                           </span>
                         </div>
@@ -973,24 +725,14 @@ function Completion({
               whileTap={{ scale: 0.97 }}
               transition={SPRING_BTN}
               onClick={onRestart}
-              className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
-              style={{
-                background: "linear-gradient(135deg, #8dc63f 0%, #6fa832 100%)",
-                color: "#0f2338",
-                boxShadow: "0 12px 28px -8px rgba(141, 198, 63, 0.55)",
-              }}
+              className="btn-primary px-6 py-3 text-sm"
             >
               <RotateCcw className="h-4 w-4" />
               Retake with new questions
             </motion.button>
             <Link
               href={`/study/${topic.semester}`}
-              className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium transition-colors"
-              style={{
-                background: "#ffffff",
-                border: "1px solid #e5e7eb",
-                color: "#374151",
-              }}
+              className="btn-ghost px-6 py-3 text-sm"
             >
               <Sparkles className="h-4 w-4" />
               Back to topics
@@ -1040,7 +782,7 @@ function ScoreRing({
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="#e5e7eb"
+          stroke="var(--surface-border)"
           strokeWidth={stroke}
           fill="none"
         />
@@ -1059,17 +801,11 @@ function ScoreRing({
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <div
-          className="font-display text-6xl font-black tabular-nums"
-          style={{ color: "#0a0a0a" }}
-        >
+        <div className="text-strong font-display text-6xl font-black tabular-nums">
           {count}
-          <span style={{ color: "#9ca3af" }}> / {total}</span>
+          <span className="text-soft"> / {total}</span>
         </div>
-        <div
-          className="mt-1 font-mono text-xs uppercase tracking-[0.22em]"
-          style={{ color: "#6b7280" }}
-        >
+        <div className="text-soft mt-1 font-mono text-xs uppercase tracking-[0.22em]">
           {Math.round(pct * 100)}% correct
         </div>
       </div>

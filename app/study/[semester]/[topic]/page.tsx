@@ -8,6 +8,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Footer } from "@/components/Footer";
+import { TypingText } from "@/components/TypingText";
 import {
   getAllQuestionsForPowerpoint,
   getPowerpointById,
@@ -41,23 +42,11 @@ export default async function TopicPage({
 
   return (
     <>
-      {/* Sticky header — Tesla-themed */}
-      <header
-        className="sticky top-0 z-40 border-b backdrop-blur-md backdrop-saturate-150"
-        style={{
-          background: "rgba(255, 255, 255, 0.85)",
-          borderColor: "rgba(0, 0, 0, 0.08)",
-        }}
-      >
+      <header className="header-glass sticky top-0 z-40 backdrop-saturate-150">
         <div className="container flex h-16 items-center justify-between gap-4">
           <Link
             href={`/study/${semester}`}
-            className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition-colors"
-            style={{
-              background: "#f9fafb",
-              border: "1px solid #e5e7eb",
-              color: "#374151",
-            }}
+            className="text-mid border-soft surface-card inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition-colors hover:text-foreground"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             Semester {semester}
@@ -65,14 +54,11 @@ export default async function TopicPage({
           <div className="flex items-center gap-3">
             <span
               className="font-mono text-[11px] uppercase tracking-[0.22em]"
-              style={{ color: "#8dc63f" }}
+              style={{ color: "#16a34a" }}
             >
               Topic
             </span>
-            <h2
-              className="hidden font-display text-base font-semibold tracking-tight sm:block"
-              style={{ color: "#0a0a0a" }}
-            >
+            <h2 className="text-strong hidden font-display text-base font-semibold tracking-tight sm:block">
               Sem {semester}
             </h2>
           </div>
@@ -80,28 +66,16 @@ export default async function TopicPage({
         </div>
       </header>
 
-      <main
-        className="relative min-h-screen pt-12 pb-24"
-        style={{ background: "#ffffff" }}
-      >
-
+      <main className="surface-base relative min-h-screen pt-12 pb-24">
         <div className="container">
           <div className="mx-auto max-w-3xl">
             <div className="mt-2">
-              <h1
-                className="font-display text-4xl font-extrabold leading-[1.05] tracking-[-0.02em] text-balance md:text-5xl"
-                style={{ color: "#0a0a0a" }}
-              >
-                <span
-                  className="bg-clip-text text-transparent"
-                  style={{
-                    backgroundImage:
-                      "linear-gradient(135deg, #8dc63f 0%, #2563a8 100%)",
-                  }}
-                >
-                  {topic.topic_name}
-                </span>
-              </h1>
+              <TypingText
+                text={topic.topic_name}
+                className="font-display text-4xl font-extrabold leading-[1.05] tracking-[-0.02em] text-balance md:text-5xl bg-clip-text text-transparent"
+                style={{ backgroundImage: "linear-gradient(135deg, #16a34a 0%, #22d3ee 100%)" }}
+                cursorColor="#22d3ee"
+              />
             </div>
 
             <div className="mt-10 grid gap-5 md:grid-cols-2">
@@ -111,9 +85,9 @@ export default async function TopicPage({
                 badge={`10 of ${totalBank} · Rotates`}
                 blurb={`10 sharp MCQs each session, drawn from the ${totalBank}-question pool for this topic. Retake for a fresh set.`}
                 icon={<Sparkles className="h-5 w-5" />}
-                accentBar="#8dc63f"
-                iconBg="linear-gradient(135deg, #8dc63f, #6fa832)"
-                glow="rgba(141, 198, 63, 0.4)"
+                accentBar="#16a34a"
+                iconBg="#16a34a"
+                glow="rgba(22, 163, 74, 0.4)"
                 href={`/study/${semester}/${encodeURIComponent(topic.id)}/quiz?mode=study`}
                 hint="No timer · Spaced practice"
               />
@@ -124,7 +98,7 @@ export default async function TopicPage({
                 blurb={`Pulls from all ${examPool} topics in semester ${semester}. Timed, with a full score summary at the end.`}
                 icon={<GraduationCap className="h-5 w-5" />}
                 accentBar="#2563a8"
-                iconBg="linear-gradient(135deg, #2563a8, #5ba3d9)"
+                iconBg="#2563a8"
                 glow="rgba(37, 99, 168, 0.4)"
                 href={`/study/${semester}/${encodeURIComponent(topic.id)}/quiz?mode=exam`}
                 hint="50 min · Score at end"
@@ -164,12 +138,8 @@ function ModeCard({
   return (
     <Link
       href={href}
-      className="group relative overflow-hidden rounded-2xl p-6 transition-all hover:-translate-y-1 hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)]"
-      style={{
-        background: "#f9fafb",
-        border: "1px solid #e5e7eb",
-        borderLeft: `4px solid ${accentBar}`,
-      }}
+      className="surface-card border-soft group relative overflow-hidden rounded-2xl p-6 transition-all hover:-translate-y-1 hover:shadow-[0_12px_28px_-8px_rgba(0,0,0,0.12)]"
+      style={{ borderLeft: `4px solid ${accentBar}` }}
     >
       <div className="relative">
         <div className="flex items-center justify-between">
@@ -193,29 +163,18 @@ function ModeCard({
             {badge}
           </span>
         </div>
-        <h3
-          className="mt-6 font-display text-2xl font-semibold tracking-tight"
-          style={{ color: "#0a0a0a" }}
-        >
+        <h3 className="text-strong mt-6 font-display text-2xl font-semibold tracking-tight">
           {title}
         </h3>
-        <p className="mt-2 text-sm" style={{ color: "#6b7280" }}>
-          {blurb}
-        </p>
+        <p className="text-soft mt-2 text-sm">{blurb}</p>
         <div className="mt-6 flex items-center justify-between">
-          <span
-            className="inline-flex items-center gap-1.5 text-[11px]"
-            style={{ color: "#6b7280" }}
-          >
+          <span className="text-soft inline-flex items-center gap-1.5 text-[11px]">
             <Clock className="h-3 w-3" />
             {hint}
           </span>
           <span
             className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-transform group-hover:translate-x-0.5"
-            style={{
-              background: "#8dc63f",
-              color: "#0f2338",
-            }}
+            style={{ background: "#16a34a", color: "#ffffff" }}
           >
             Start
             <ArrowRight className="h-3.5 w-3.5" />

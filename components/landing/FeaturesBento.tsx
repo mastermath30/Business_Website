@@ -23,38 +23,36 @@ interface Step {
 
 const steps: Step[] = [
   {
-    n: "01",
+    n: "1",
     icon: Calendar,
     title: "Choose your semester",
     body: "Pick Semester 1 or Semester 2. Lecture decks for each course are pre-loaded — no setup, no syllabus dance. Open the term and get straight to studying.",
-    iconGradient: "linear-gradient(135deg, #8dc63f, #2563a8)",
+    iconGradient: "#16a34a",
     span: "wide",
   },
   {
-    n: "02",
+    n: "2",
     icon: FolderOpen,
     title: "Pick a topic",
     body: "Topics extracted from each lecture appear as cards. Choose what you actually need to study tonight.",
-    iconGradient: "linear-gradient(135deg, #8dc63f, #2563a8)",
+    iconGradient: "#16a34a",
     span: "narrow",
   },
   {
-    n: "03",
+    n: "3",
     icon: Sparkles,
     title: "Study mode · 10 questions",
     body: "10 sharp MCQs per session — pulled from 25 questions stored per topic. Retake anytime for a fresh set.",
-    iconGradient: "linear-gradient(135deg, #8dc63f, #2563a8)",
+    iconGradient: "#16a34a",
     span: "narrow",
   },
   {
-    n: "04",
+    n: "4",
     icon: GraduationCap,
     title: "Final exam · 50 questions",
     body: "Optional timed exam pulling from every topic in the semester. Score summary, gaps highlighted, ready for the real thing.",
-    iconGradient: "linear-gradient(135deg, #8dc63f, #2563a8)",
+    iconGradient: "#16a34a",
     span: "wide",
-    surface:
-      "linear-gradient(180deg, #f9fafb 0%, rgba(141,198,63,0.07) 100%)",
   },
 ];
 
@@ -75,7 +73,7 @@ export function FeaturesBento() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, ease: EASE_OUT_CUBIC }}
           className="text-xs font-semibold uppercase tracking-[0.18em]"
-          style={{ color: "#8dc63f" }}
+          style={{ color: "#16a34a" }}
         >
           How the study tool works
         </motion.div>
@@ -83,8 +81,8 @@ export function FeaturesBento() {
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.08, ease: EASE_OUT_CUBIC }}
-          className="mt-4 font-display text-4xl font-bold tracking-tight text-balance md:text-5xl"
-          style={{ color: "#0a0a0a" }}
+          className="mt-4 font-display text-4xl font-bold text-balance text-foreground md:text-5xl"
+          style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
         >
           Studying that actually sticks.
         </motion.h2>
@@ -92,8 +90,7 @@ export function FeaturesBento() {
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.16, ease: EASE_OUT_CUBIC }}
-          className="mx-auto mt-4 max-w-2xl text-balance text-lg"
-          style={{ color: "#6b7280" }}
+          className="mx-auto mt-4 max-w-2xl text-balance text-lg text-muted-foreground"
         >
           Four moves, dialed-in for retention. No clutter — just the loop that
           gets you exam-ready.
@@ -107,7 +104,7 @@ export function FeaturesBento() {
           className="pointer-events-none absolute -left-3 top-0 hidden h-full w-px md:block"
           style={{
             background:
-              "linear-gradient(180deg, rgba(141,198,63,0.6) 0%, rgba(141,198,63,0) 100%)",
+              "linear-gradient(180deg, rgba(22,163,74,0.5) 0%, transparent 100%)",
           }}
         />
 
@@ -151,38 +148,35 @@ function BentoCard({
         delay: 0.25 + index * 0.1,
         ease: EASE_OUT_CUBIC,
       }}
-      whileHover={{ y: -6, transition: SPRING_CARD }}
-      className={`group relative overflow-hidden rounded-[20px] p-7 transition-[border-color,box-shadow] duration-300 md:p-9 ${className ?? ""}`}
+      whileHover={{ y: -4, transition: SPRING_CARD }}
+      className={`group relative overflow-hidden rounded-[20px] p-7 md:p-9 ${className ?? ""}`}
       style={{
-        background: step.surface ?? "#f9fafb",
-        border: "1px solid #e5e7eb",
-        willChange: "transform",
+        background: "var(--surface-1)",
+        border: "1px solid var(--surface-border)",
         transform: "translateZ(0)",
+        transition: "border-color 200ms ease, box-shadow 200ms ease",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = "rgba(141, 198, 63, 0.6)";
+        e.currentTarget.style.borderColor = "rgba(22, 163, 74, 0.45)";
         e.currentTarget.style.boxShadow =
-          "0 12px 40px -12px rgba(141, 198, 63, 0.35), 0 4px 20px rgba(0, 0, 0, 0.06)";
+          "0 12px 32px -8px rgba(22, 163, 74, 0.14), 0 4px 12px rgba(0, 0, 0, 0.07)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = "#e5e7eb";
+        e.currentTarget.style.borderColor = "var(--surface-border)";
         e.currentTarget.style.boxShadow = "none";
       }}
     >
-      {/* hover glow halo */}
+      {/* subtle top highlight on hover */}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 rounded-[20px] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-        style={{
-          background:
-            "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(141, 198, 63, 0.18), transparent 70%)",
-        }}
+        className="pointer-events-none absolute inset-x-0 top-0 h-px rounded-t-[20px] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{ background: "rgba(22, 163, 74, 0.5)" }}
       />
       {/* decorative giant step number — light watermark */}
       <span
         aria-hidden
         className="pointer-events-none absolute right-4 top-2 z-0 select-none font-display text-[80px] font-black leading-none md:text-[96px]"
-        style={{ color: "rgba(141, 198, 63, 0.18)" }}
+        style={{ color: "rgba(22, 163, 74, 0.1)" }}
       >
         {step.n}
       </span>
@@ -192,27 +186,21 @@ function BentoCard({
           className="inline-flex h-12 w-12 items-center justify-center rounded-xl text-white"
           style={{
             background: step.iconGradient,
-            boxShadow: "0 4px 14px rgba(141, 198, 63, 0.3)",
+            boxShadow: "0 2px 8px rgba(22, 163, 74, 0.25)",
           }}
         >
           <Icon className="h-5 w-5" />
         </span>
         <div
           className="mt-5 font-mono text-[11px] uppercase tracking-[0.18em]"
-          style={{ color: "#6b7280" }}
+          style={{ color: "hsl(var(--muted-foreground))" }}
         >
           Step {step.n}
         </div>
-        <h3
-          className="mt-2 font-display text-2xl font-bold tracking-tight"
-          style={{ color: "#0a0a0a" }}
-        >
+        <h3 className="mt-2 font-display text-2xl font-bold tracking-tight text-foreground">
           {step.title}
         </h3>
-        <p
-          className="mt-2 max-w-xl text-sm leading-relaxed md:text-[15px]"
-          style={{ color: "#374151" }}
-        >
+        <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-[15px]">
           {step.body}
         </p>
       </div>

@@ -11,6 +11,7 @@ import type {
   Semester,
 } from "./schema";
 import { GENERATED_BANK } from "./generated-questions";
+import { balanceQuizOptions } from "@/lib/utils";
 
 // ─── powerpoints ────────────────────────────────────────────────────────────
 // Filenames mirror the actual decks living under /sem1 and /sem2.
@@ -737,30 +738,46 @@ if (TEMPLATES.length !== 50) {
 function buildQuestionsForPowerpoint(pp: Powerpoint): DbQuestion[] {
   const real = GENERATED_BANK[pp.id];
   if (real && real.length > 0) {
-    return real.map((q, idx) => ({
-      id: `${pp.id}-q${idx + 1}`,
-      powerpoint_id: pp.id,
-      question: q.question,
-      option_a: q.option_a,
-      option_b: q.option_b,
-      option_c: q.option_c,
-      option_d: q.option_d,
-      correct_answer: q.correct,
-      explanation: q.explanation,
-    }));
+    return real.map((q, idx) => {
+      const [option_a, option_b, option_c, option_d] = balanceQuizOptions([
+        q.option_a,
+        q.option_b,
+        q.option_c,
+        q.option_d,
+      ]);
+      return {
+        id: `${pp.id}-q${idx + 1}`,
+        powerpoint_id: pp.id,
+        question: q.question,
+        option_a,
+        option_b,
+        option_c,
+        option_d,
+        correct_answer: q.correct,
+        explanation: q.explanation,
+      };
+    });
   }
   // Fallback for lessons without real questions yet.
-  return TEMPLATES.map((t, idx) => ({
-    id: `${pp.id}-q${idx + 1}`,
-    powerpoint_id: pp.id,
-    question: t.q(pp.topic_name),
-    option_a: t.options[0],
-    option_b: t.options[1],
-    option_c: t.options[2],
-    option_d: t.options[3],
-    correct_answer: t.correct,
-    explanation: t.explanation(pp.topic_name),
-  }));
+  return TEMPLATES.map((t, idx) => {
+    const [option_a, option_b, option_c, option_d] = balanceQuizOptions([
+      t.options[0],
+      t.options[1],
+      t.options[2],
+      t.options[3],
+    ]);
+    return {
+      id: `${pp.id}-q${idx + 1}`,
+      powerpoint_id: pp.id,
+      question: t.q(pp.topic_name),
+      option_a,
+      option_b,
+      option_c,
+      option_d,
+      correct_answer: t.correct,
+      explanation: t.explanation(pp.topic_name),
+    };
+  });
 }
 
 export const questions: DbQuestion[] = powerpoints.flatMap(

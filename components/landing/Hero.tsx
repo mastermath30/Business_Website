@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useLayoutEffect, useRef } from "react";
+import { useCallback, useLayoutEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Sparkles, CheckCircle2 } from "lucide-react";
 import gsap from "gsap";
@@ -13,7 +13,16 @@ import { SPRING_TAP } from "@/lib/animation";
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Scroll-linked parallax for the dashboard mockup
+  const handleTypingDone = useCallback(() => {
+    gsap.to("[data-hero-attribution]", {
+      opacity: 1,
+      y: 0,
+      duration: 0.6,
+      ease: "power3.out",
+    });
+  }, []);
+
+  // Scroll-linked parallax for the study preview.
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
@@ -47,6 +56,7 @@ export function Hero() {
         return;
       }
 
+      // attribution stays hidden — fades in after typing finishes via handleTypingDone
       gsap.set("[data-hero-attribution]", { opacity: 0, y: -10 });
       gsap.set("[data-hero-badge]", { opacity: 0, y: -10 });
       gsap.set("[data-hero-headline]", { opacity: 0, y: 24 });
@@ -56,15 +66,10 @@ export function Hero() {
 
       const tl = gsap.timeline({
         defaults: { ease: "power3.out" },
-        delay: 0.15,
+        delay: 0.25,
       });
 
-      tl.to(
-        "[data-hero-attribution]",
-        { opacity: 1, y: 0, duration: 0.6 },
-        0
-      )
-        .to("[data-hero-badge]", { opacity: 1, y: 0, duration: 0.6 }, 0.1)
+      tl.to("[data-hero-badge]", { opacity: 1, y: 0, duration: 0.6 }, 0.1)
         .to(
           "[data-hero-headline]",
           { opacity: 1, y: 0, duration: 0.7 },
@@ -104,8 +109,8 @@ export function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="relative flex min-h-screen items-center justify-center overflow-hidden pt-8 pb-16"
-      style={{ background: "#ffffff", transform: "translateZ(0)" }}
+      className="relative flex min-h-screen items-center justify-center overflow-hidden pt-28 pb-16"
+      style={{ background: "hsl(var(--background))", transform: "translateZ(0)" }}
     >
       <div className="container relative">
         <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
@@ -113,7 +118,7 @@ export function Hero() {
           <div
             data-hero-attribution
             className="mb-3 inline-flex items-center gap-2.5 text-base"
-            style={{ color: "#6b7280", willChange: "transform, opacity" }}
+            style={{ color: "hsl(var(--muted-foreground))", willChange: "transform, opacity", opacity: 0 }}
           >
             <img
               src="/TeslaSTEMlogo.png"
@@ -124,12 +129,12 @@ export function Hero() {
           </div>
 
           {/* announcement badge */}
-          <div data-hero-badge className="mb-6 flex justify-center" style={{ willChange: "transform, opacity" }}>
+          <div data-hero-badge className="mb-6 flex justify-center" style={{ willChange: "transform, opacity", opacity: 0 }}>
             <Link
               href="#features"
               className="group inline-flex items-center gap-2.5 rounded-full px-5 py-2 text-base font-medium transition-colors"
               style={{
-                color: "#374151",
+                color: "hsl(var(--foreground) / 0.75)",
                 border: "1px solid rgba(141, 198, 63, 0.4)",
                 background: "rgba(141, 198, 63, 0.08)",
               }}
@@ -153,27 +158,26 @@ export function Hero() {
           <div
             data-hero-headline
             className="mt-7"
-            style={{ willChange: "transform, opacity" }}
+            style={{ willChange: "transform, opacity", opacity: 0 }}
           >
-            <TypingHeadline />
+            <TypingHeadline onDone={handleTypingDone} />
           </div>
 
           {/* subtext */}
           <p
             data-hero-subtext
             className="mt-6 max-w-xl text-balance text-lg"
-            style={{ color: "#6b7280", willChange: "transform, opacity" }}
+            style={{ color: "hsl(var(--muted-foreground))", willChange: "transform, opacity", opacity: 0 }}
           >
             Every Tesla STEM business lecture, turned into 25 exam-grade MCQs
-            per topic. Pick a semester, pick a topic, run a 10-question round —
-            and come back tomorrow for a fresh set.
+            per topic. Pick a semester, pick a topic, and run a 10-question round.
           </p>
 
           {/* single CTA — magnetic + spring-scale on hover */}
           <div
             data-hero-cta
             className="mt-10"
-            style={{ willChange: "transform, opacity" }}
+            style={{ willChange: "transform, opacity", opacity: 0 }}
           >
             <Magnetic strength={0.4}>
               <motion.div
@@ -206,7 +210,7 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Floating dashboard preview — parallax outer, GSAP entrance + breathing inner */}
+        {/* Floating study preview — parallax outer, GSAP entrance + breathing inner */}
         <motion.div
           style={{
             y: mockupParallaxY,
@@ -222,7 +226,7 @@ export function Hero() {
               opacity: 0,
             }}
           >
-            <HeroDashboardMockup />
+            <HeroStudyPreview />
           </div>
         </motion.div>
       </div>
@@ -230,14 +234,14 @@ export function Hero() {
   );
 }
 
-function HeroDashboardMockup() {
+function HeroStudyPreview() {
   return (
     <div
       style={{
         transform: "rotateX(3deg) translateZ(0)",
         transformStyle: "preserve-3d",
-        background: "#ffffff",
-        border: "1px solid #e5e7eb",
+        background: "hsl(var(--background))",
+        border: "1px solid var(--surface-border)",
         boxShadow:
           "0 30px 60px rgba(0, 0, 0, 0.10), 0 4px 16px rgba(0, 0, 0, 0.05)",
       }}
@@ -245,14 +249,14 @@ function HeroDashboardMockup() {
     >
       <div
         className="overflow-hidden rounded-[20px]"
-        style={{ background: "#f9fafb", border: "1px solid #e5e7eb" }}
+        style={{ background: "var(--surface-1)", border: "1px solid var(--surface-border)" }}
       >
         {/* window chrome */}
         <div
           className="flex items-center justify-between px-4 py-2.5"
           style={{
-            background: "#ffffff",
-            borderBottom: "1px solid #e5e7eb",
+            background: "hsl(var(--background))",
+            borderBottom: "1px solid var(--surface-border)",
           }}
         >
           <div className="flex items-center gap-1.5">
@@ -263,16 +267,16 @@ function HeroDashboardMockup() {
           <div
             className="hidden items-center gap-1.5 rounded-full px-3 py-1 text-[11px] sm:flex"
             style={{
-              background: "#f9fafb",
-              border: "1px solid #e5e7eb",
-              color: "#6b7280",
+              background: "var(--surface-1)",
+              border: "1px solid var(--surface-border)",
+              color: "hsl(var(--muted-foreground))",
             }}
           >
             <span
               className="h-1.5 w-1.5 rounded-full"
               style={{ background: "#8dc63f" }}
             />
-            app.businessboost.com/dashboard
+            app.businessboost.com/study
           </div>
           <div className="h-5 w-12" />
         </div>
@@ -282,11 +286,11 @@ function HeroDashboardMockup() {
           <div className="hidden md:col-span-3 md:block">
             <div
               className="rounded-xl p-3"
-              style={{ background: "#ffffff", border: "1px solid #e5e7eb" }}
+              style={{ background: "hsl(var(--background))", border: "1px solid var(--surface-border)" }}
             >
               <div
                 className="text-[10px] font-medium uppercase tracking-wider"
-                style={{ color: "#6b7280" }}
+                style={{ color: "hsl(var(--muted-foreground))" }}
               >
                 Topics
               </div>
@@ -307,7 +311,7 @@ function HeroDashboardMockup() {
                             background: "rgba(141, 198, 63, 0.12)",
                             color: "#6fa832",
                           }
-                        : { color: "#6b7280" }
+                        : { color: "hsl(var(--muted-foreground))" }
                     }
                   >
                     <span className="truncate">{t.label}</span>
@@ -324,7 +328,7 @@ function HeroDashboardMockup() {
           <div className="md:col-span-6">
             <div
               className="rounded-xl p-5"
-              style={{ background: "#ffffff", border: "1px solid #e5e7eb" }}
+              style={{ background: "hsl(var(--background))", border: "1px solid var(--surface-border)" }}
             >
               <div className="flex items-center justify-between">
                 <div
@@ -337,13 +341,13 @@ function HeroDashboardMockup() {
                 >
                   Marketing · Q4 / 10
                 </div>
-                <div className="text-[11px]" style={{ color: "#6b7280" }}>
+                <div className="text-[11px]" style={{ color: "hsl(var(--muted-foreground))" }}>
                   00:24
                 </div>
               </div>
               <div
                 className="mt-2.5 h-1 overflow-hidden rounded-full"
-                style={{ background: "#e5e7eb" }}
+                style={{ background: "var(--surface-border)" }}
               >
                 <motion.div
                   initial={{ width: "20%" }}
@@ -357,7 +361,7 @@ function HeroDashboardMockup() {
               </div>
               <h3
                 className="mt-5 text-[15px] font-medium leading-snug"
-                style={{ color: "#0a0a0a" }}
+                style={{ color: "hsl(var(--foreground))" }}
               >
                 A penetration pricing strategy is most appropriate when:
               </h3>
@@ -377,14 +381,14 @@ function HeroDashboardMockup() {
                     style={
                       i === 1
                         ? {
-                            background: "#f0fdf4",
+                            background: "rgba(141, 198, 63, 0.08)",
                             border: "1px solid #8dc63f",
-                            color: "#0a0a0a",
+                            color: "hsl(var(--foreground))",
                           }
                         : {
-                            background: "#f9fafb",
-                            border: "1px solid #e5e7eb",
-                            color: "#374151",
+                            background: "var(--surface-1)",
+                            border: "1px solid var(--surface-border)",
+                            color: "hsl(var(--foreground) / 0.75)",
                           }
                     }
                   >
@@ -397,7 +401,7 @@ function HeroDashboardMockup() {
                                 background: "rgba(141, 198, 63, 0.22)",
                                 color: "#6fa832",
                               }
-                            : { background: "#e5e7eb", color: "#6b7280" }
+                            : { background: "var(--surface-border)", color: "hsl(var(--muted-foreground))" }
                         }
                       >
                         {String.fromCharCode(65 + i)}
@@ -420,24 +424,24 @@ function HeroDashboardMockup() {
           <div className="grid grid-cols-2 gap-3 md:col-span-3 md:grid-cols-1">
             <div
               className="rounded-xl p-3.5"
-              style={{ background: "#ffffff", border: "1px solid #e5e7eb" }}
+              style={{ background: "hsl(var(--background))", border: "1px solid var(--surface-border)" }}
             >
               <div
                 className="text-[10px] uppercase tracking-wider"
-                style={{ color: "#6b7280" }}
+                style={{ color: "hsl(var(--muted-foreground))" }}
               >
                 Streak
               </div>
               <div className="mt-1 flex items-baseline gap-1">
                 <span
                   className="font-display text-2xl font-semibold tabular-nums"
-                  style={{ color: "#0a0a0a" }}
+                  style={{ color: "hsl(var(--foreground))" }}
                 >
                   <CountUp value={12} duration={1.4} delay={1.6} />
                 </span>
                 <span
                   className="text-[10px]"
-                  style={{ color: "#6b7280" }}
+                  style={{ color: "hsl(var(--muted-foreground))" }}
                 >
                   days
                 </span>
@@ -453,7 +457,7 @@ function HeroDashboardMockup() {
                             background:
                               "linear-gradient(90deg, #8dc63f, #2563a8)",
                           }
-                        : { background: "#e5e7eb" }
+                        : { background: "var(--surface-border)" }
                     }
                   />
                 ))}
@@ -461,11 +465,11 @@ function HeroDashboardMockup() {
             </div>
             <div
               className="rounded-xl p-3.5"
-              style={{ background: "#ffffff", border: "1px solid #e5e7eb" }}
+              style={{ background: "hsl(var(--background))", border: "1px solid var(--surface-border)" }}
             >
               <div
                 className="text-[10px] uppercase tracking-wider"
-                style={{ color: "#6b7280" }}
+                style={{ color: "hsl(var(--muted-foreground))" }}
               >
                 XP
               </div>
@@ -485,7 +489,7 @@ function HeroDashboardMockup() {
               </div>
               <div
                 className="mt-2 h-1 overflow-hidden rounded-full"
-                style={{ background: "#e5e7eb" }}
+                style={{ background: "var(--surface-border)" }}
               >
                 <div
                   className="h-full w-[68%]"
@@ -496,27 +500,27 @@ function HeroDashboardMockup() {
               </div>
               <div
                 className="mt-1 text-[10px]"
-                style={{ color: "#6b7280" }}
+                style={{ color: "hsl(var(--muted-foreground))" }}
               >
                 Lvl 14 · 180 to next
               </div>
             </div>
             <div
               className="col-span-2 rounded-xl p-3.5 md:col-span-1"
-              style={{ background: "#ffffff", border: "1px solid #e5e7eb" }}
+              style={{ background: "hsl(var(--background))", border: "1px solid var(--surface-border)" }}
             >
               <div
                 className="text-[10px] uppercase tracking-wider"
-                style={{ color: "#6b7280" }}
+                style={{ color: "hsl(var(--muted-foreground))" }}
               >
                 Accuracy
               </div>
               <div
                 className="mt-1 font-display text-2xl font-semibold tabular-nums"
-                style={{ color: "#0a0a0a" }}
+                style={{ color: "hsl(var(--foreground))" }}
               >
                 <CountUp value={87} duration={1.6} delay={2.0} />
-                <span className="text-sm" style={{ color: "#6b7280" }}>
+                <span className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
                   %
                 </span>
               </div>

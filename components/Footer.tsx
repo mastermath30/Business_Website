@@ -8,14 +8,13 @@ const cols = [
     links: [
       { label: "Features", href: "#features" },
       { label: "Study Tool", href: "/study" },
-      { label: "Dashboard", href: "/dashboard" },
       { label: "Pricing", href: "#" },
     ],
   },
   {
     title: "Company",
     links: [
-      { label: "About", href: "#" },
+      { label: "About", href: "/about" },
       { label: "Blog", href: "#" },
       { label: "Careers", href: "#" },
       { label: "Press", href: "#" },
@@ -86,17 +85,6 @@ export function Footer() {
 
         <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-border/60 pt-6 text-xs text-muted-foreground md:flex-row md:items-center">
           <span>© 2026 BusinessBoost Inc. All rights reserved.</span>
-          <div className="flex items-center gap-5">
-            <Link href="#" className="hover:text-foreground">
-              Privacy
-            </Link>
-            <Link href="#" className="hover:text-foreground">
-              Terms
-            </Link>
-            <Link href="#" className="hover:text-foreground">
-              Security
-            </Link>
-          </div>
         </div>
       </div>
     </footer>

@@ -4,19 +4,21 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Logo } from "@/components/Logo";
+import { ThemeToggle } from "@/components/ui/curtain-theme-toggle";
 import { getUser } from "@/lib/localStorage";
 import type { StoredUser } from "@/lib/localStorage";
 
 const links = [
   { href: "/#features", label: "Features" },
   { href: "/study", label: "Study Tool" },
-  { href: "/dashboard", label: "Dashboard" },
+  { href: "/about", label: "About" },
 ];
 
 export function Navbar({ landing = false }: { landing?: boolean }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState<StoredUser | null>(null);
@@ -44,6 +46,24 @@ export function Navbar({ landing = false }: { landing?: boolean }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  function scrollToFeatures(e: React.MouseEvent<HTMLAnchorElement>) {
+    setOpen(false);
+    if (pathname === "/") {
+      e.preventDefault();
+      document
+        .querySelector("#features")
+        ?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      e.preventDefault();
+      router.push("/");
+      setTimeout(() => {
+        document
+          .querySelector("#features")
+          ?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+  }
+
   function logout() {
     localStorage.removeItem("bb:user");
     setUser(null);
@@ -64,63 +84,63 @@ export function Navbar({ landing = false }: { landing?: boolean }) {
         style={{
           minHeight: "72px",
           width: "100%",
-          maxWidth: "860px",
+          maxWidth: "1080px",
           margin: "16px auto 0",
           padding: "0 32px",
           display: "flex",
           alignItems: "center",
-          gap: "40px",
+          gap: "24px",
           borderRadius: "9999px",
-          background: "rgba(255,255,255,0.9)",
-          backdropFilter: "blur(12px)",
-          border: "1px solid rgba(0,0,0,0.08)",
+          background: "var(--nav-bg)",
+          backdropFilter: "blur(16px) saturate(180%)",
+          WebkitBackdropFilter: "blur(16px) saturate(180%)",
+          border: "1px solid var(--nav-border)",
           position: "fixed",
           top: 0,
           left: 0,
           right: 0,
           zIndex: 50,
           boxShadow: scrolled
-            ? "0 4px 20px rgba(0,0,0,0.08)"
-            : "0 2px 10px rgba(0,0,0,0.04)",
+            ? "0 4px 20px rgba(0,0,0,0.10)"
+            : "0 2px 10px rgba(0,0,0,0.05)",
         }}
       >
         <Logo />
 
-        <ul
-          style={{
-            fontSize: "16px",
-            display: "flex",
-            gap: "36px",
-            listStyle: "none",
-            margin: 0,
-            padding: 0,
-          }}
-          className="hidden md:flex"
-        >
-          {links.map((l) => (
-            <li key={l.href}>
-              <Link
-                href={l.href}
-                className="group relative transition-colors duration-150 ease-out"
-                style={{ color: "#374151", fontSize: "16px", fontWeight: 500, lineHeight: 1 }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#0a0a0a")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#374151")}
-              >
-                {l.label}
-                <span
-                  aria-hidden
-                  className="absolute left-1/2 h-1 w-1 -translate-x-1/2 rounded-full opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-                  style={{ background: "#8dc63f", bottom: "-8px" }}
-                />
-              </Link>
-            </li>
-          ))}
-        </ul>
+        {/* Center column — grows to fill space and centers links within it */}
+        <div className="hidden md:flex" style={{ flex: 1, justifyContent: "center" }}>
+          <ul
+            style={{
+              display: "flex",
+              gap: "clamp(16px, 3vw, 40px)",
+              listStyle: "none",
+              margin: 0,
+              padding: 0,
+            }}
+          >
+            {links.map((l) => (
+              <li key={l.href}>
+                <Link
+                  href={l.href}
+                  onClick={l.href === "/#features" ? scrollToFeatures : undefined}
+                  className="group relative transition-colors duration-200 ease-out text-foreground/60 hover:text-foreground"
+                  style={{ fontSize: "15px", fontWeight: 500, lineHeight: 1, letterSpacing: "-0.005em", whiteSpace: "nowrap" }}
+                >
+                  {l.label}
+                  <span
+                    aria-hidden
+                    className="absolute left-0 right-0 h-[2px] origin-center scale-x-0 rounded-full transition-transform duration-200 ease-out group-hover:scale-x-100"
+                    style={{ background: "#16a34a", bottom: "-8px" }}
+                  />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
 
         {/* Right side */}
         <div
           style={{
-            marginLeft: "auto",
             display: "flex",
             alignItems: "center",
             gap: "8px",
@@ -137,12 +157,12 @@ export function Navbar({ landing = false }: { landing?: boolean }) {
                   gap: "8px",
                   padding: "6px 14px 6px 6px",
                   borderRadius: "9999px",
-                  border: "1px solid #e5e7eb",
-                  background: "#f9fafb",
+                  border: "1px solid var(--surface-border)",
+                  background: "var(--surface-1)",
                   cursor: "pointer",
                   fontSize: "14px",
                   fontWeight: 500,
-                  color: "#374151",
+                  color: "hsl(var(--foreground) / 0.65)",
                 }}
               >
                 <span
@@ -153,7 +173,7 @@ export function Navbar({ landing = false }: { landing?: boolean }) {
                     width: "28px",
                     height: "28px",
                     borderRadius: "50%",
-                    background: "linear-gradient(135deg, #8dc63f, #2563a8)",
+                    background: "#16a34a",
                     color: "#ffffff",
                     fontSize: "12px",
                     fontWeight: 700,
@@ -177,16 +197,17 @@ export function Navbar({ landing = false }: { landing?: boolean }) {
                       top: "calc(100% + 8px)",
                       right: 0,
                       minWidth: "160px",
-                      background: "#ffffff",
-                      border: "1px solid #e5e7eb",
+                      background: "var(--nav-bg)",
+                      backdropFilter: "blur(12px)",
+                      border: "1px solid var(--surface-border)",
                       borderRadius: "14px",
-                      boxShadow: "0 8px 24px rgba(0,0,0,0.10)",
+                      boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
                       padding: "6px",
                       zIndex: 60,
                     }}
                   >
                     <Link
-                      href="/dashboard"
+                      href="/study"
                       onClick={() => setDropdownOpen(false)}
                       style={{
                         display: "block",
@@ -194,13 +215,13 @@ export function Navbar({ landing = false }: { landing?: boolean }) {
                         borderRadius: "9px",
                         fontSize: "14px",
                         fontWeight: 500,
-                        color: "#374151",
+                        color: "hsl(var(--foreground) / 0.65)",
                         textDecoration: "none",
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = "#f9fafb")}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "var(--surface-1)")}
                       onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                     >
-                      Dashboard
+                      Study Tool
                     </Link>
                     <button
                       onClick={logout}
@@ -230,19 +251,20 @@ export function Navbar({ landing = false }: { landing?: boolean }) {
             /* Landing page only: Log in + Sign up */
             <>
               <Link
-                href="/login"
+                href="/sign-in"
                 className="hidden md:block"
                 style={{
                   padding: "8px 16px",
                   borderRadius: "9999px",
                   fontSize: "14px",
                   fontWeight: 500,
-                  color: "#6b7280",
+                  color: "hsl(var(--muted-foreground))",
                   textDecoration: "none",
                   transition: "color 150ms ease",
+                  whiteSpace: "nowrap",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#0a0a0a")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#6b7280")}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "hsl(var(--foreground))")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "hsl(var(--muted-foreground))")}
               >
                 Log in
               </Link>
@@ -250,23 +272,27 @@ export function Navbar({ landing = false }: { landing?: boolean }) {
                 href="/signup"
                 className="hidden md:block"
                 style={{
-                  padding: "8px 18px",
+                  padding: "9px 20px",
                   borderRadius: "9999px",
                   fontSize: "14px",
                   fontWeight: 600,
-                  color: "#8dc63f",
+                  color: "#ffffff",
                   textDecoration: "none",
-                  background: "transparent",
-                  border: "1.5px solid #8dc63f",
-                  transition: "background-color 150ms ease, color 150ms ease",
+                  background: "#16a34a",
+                  border: "1px solid #16a34a",
+                  boxShadow: "0 1px 3px rgba(22, 163, 74, 0.20)",
+                  transition: "background-color 200ms ease, box-shadow 200ms ease, transform 200ms ease",
+                  whiteSpace: "nowrap",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "#8dc63f";
-                  e.currentTarget.style.color = "#0f2338";
+                  e.currentTarget.style.background = "#15803d";
+                  e.currentTarget.style.borderColor = "#15803d";
+                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(22, 163, 74, 0.28)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "transparent";
-                  e.currentTarget.style.color = "#8dc63f";
+                  e.currentTarget.style.background = "#16a34a";
+                  e.currentTarget.style.borderColor = "#16a34a";
+                  e.currentTarget.style.boxShadow = "0 1px 3px rgba(22, 163, 74, 0.20)";
                 }}
               >
                 Sign up
@@ -274,13 +300,16 @@ export function Navbar({ landing = false }: { landing?: boolean }) {
             </>
           ) : null}
 
+          {/* Dark mode toggle — curtain animation */}
+          <ThemeToggle variant="icon" buttonSize={36} duration={600} />
+
           {/* Mobile hamburger */}
           <button
             onClick={() => setOpen((v) => !v)}
             aria-label="Menu"
             aria-expanded={open}
             className="inline-flex items-center justify-center rounded-full md:hidden"
-            style={{ height: "44px", width: "44px", color: "#374151" }}
+            style={{ height: "44px", width: "44px", color: "hsl(var(--foreground) / 0.65)" }}
           >
             {open ? (
               <X style={{ height: "20px", width: "20px" }} />
@@ -308,9 +337,10 @@ export function Navbar({ landing = false }: { landing?: boolean }) {
               zIndex: 49,
               overflow: "hidden",
               borderRadius: "16px",
-              border: "1px solid rgba(0,0,0,0.08)",
-              background: "rgba(255,255,255,0.96)",
-              boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+              border: "1px solid var(--nav-border)",
+              background: "var(--nav-bg)",
+              backdropFilter: "blur(12px)",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.10)",
             }}
           >
             <ul className="flex flex-col gap-1 p-3">
@@ -318,13 +348,17 @@ export function Navbar({ landing = false }: { landing?: boolean }) {
                 <li key={l.href}>
                   <Link
                     href={l.href}
-                    onClick={() => setOpen(false)}
-                    className="block rounded-lg transition-colors hover:bg-black/[0.04]"
+                    onClick={
+                      l.href === "/#features"
+                        ? scrollToFeatures
+                        : () => setOpen(false)
+                    }
+                    className="block rounded-lg transition-colors hover:bg-foreground/\[0.05\]"
                     style={{
                       padding: "10px 12px",
                       fontSize: "16px",
                       fontWeight: 500,
-                      color: "#374151",
+                      color: "hsl(var(--foreground) / 0.65)",
                     }}
                   >
                     {l.label}
@@ -370,14 +404,14 @@ export function Navbar({ landing = false }: { landing?: boolean }) {
                   }}
                 >
                   <Link
-                    href="/login"
+                    href="/sign-in"
                     onClick={() => setOpen(false)}
-                    className="block rounded-lg transition-colors hover:bg-black/[0.04]"
+                    className="block rounded-lg transition-colors hover:bg-foreground/\[0.05\]"
                     style={{
                       padding: "10px 12px",
                       fontSize: "16px",
                       fontWeight: 500,
-                      color: "#374151",
+                      color: "hsl(var(--foreground) / 0.65)",
                     }}
                   >
                     Log in
@@ -385,12 +419,12 @@ export function Navbar({ landing = false }: { landing?: boolean }) {
                   <Link
                     href="/signup"
                     onClick={() => setOpen(false)}
-                    className="block rounded-lg transition-colors hover:bg-black/[0.04]"
+                    className="block rounded-lg transition-colors hover:bg-foreground/\[0.05\]"
                     style={{
                       padding: "10px 12px",
                       fontSize: "16px",
                       fontWeight: 600,
-                      color: "#6fa832",
+                      color: "#15803d",
                     }}
                   >
                     Sign up
