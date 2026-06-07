@@ -169,8 +169,8 @@ export function Hero() {
             className="mt-6 max-w-xl text-balance text-lg"
             style={{ color: "hsl(var(--muted-foreground))", willChange: "transform, opacity", opacity: 0 }}
           >
-            Every Tesla STEM business lecture, turned into 25 exam-grade MCQs
-            per topic. Pick a semester, pick a topic, and run a 10-question round.
+            Your Tesla STEM business final is coming. Every lesson from both
+            semesters is built in with quizzes so you can study and be ready.
           </p>
 
           {/* single CTA — magnetic + spring-scale on hover */}

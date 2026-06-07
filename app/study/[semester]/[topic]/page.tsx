@@ -1,12 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Clock,
-  GraduationCap,
-  Sparkles,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
 import { Footer } from "@/components/Footer";
 import { TypingText } from "@/components/TypingText";
 import {
@@ -37,7 +31,6 @@ export default async function TopicPage({
   const topic = getPowerpointById(topicId);
   if (!topic || topic.semester !== semNum) notFound();
   const semester = semNum as Semester;
-  const examPool = getPowerpointsBySemester(semester).length;
   const totalBank = getAllQuestionsForPowerpoint(topic.id).length;
 
   return (
@@ -78,32 +71,63 @@ export default async function TopicPage({
               />
             </div>
 
-            <div className="mt-10 grid gap-5 md:grid-cols-2">
-              <ModeCard
-                title="Study"
-                count={totalBank}
-                badge={`10 of ${totalBank} · Rotates`}
-                blurb={`10 sharp MCQs each session, drawn from the ${totalBank}-question pool for this topic. Retake for a fresh set.`}
-                icon={<Sparkles className="h-5 w-5" />}
-                accentBar="#16a34a"
-                iconBg="#16a34a"
-                glow="rgba(22, 163, 74, 0.4)"
-                href={`/study/${semester}/${encodeURIComponent(topic.id)}/quiz?mode=study`}
-                hint="No timer · Spaced practice"
-              />
-              <ModeCard
-                title="Final Exam"
-                count={50}
-                badge="50 Questions · Timed"
-                blurb={`Pulls from all ${examPool} topics in semester ${semester}. Timed, with a full score summary at the end.`}
-                icon={<GraduationCap className="h-5 w-5" />}
-                accentBar="#2563a8"
-                iconBg="#2563a8"
-                glow="rgba(37, 99, 168, 0.4)"
-                href={`/study/${semester}/${encodeURIComponent(topic.id)}/quiz?mode=exam`}
-                hint="50 min · Score at end"
-              />
-            </div>
+            {totalBank > 0 ? (
+              <div className="mt-10">
+                <Link
+                  href={`/study/${semester}/${encodeURIComponent(topic.id)}/quiz?mode=study`}
+                  className="surface-card border-soft group relative isolate flex w-full items-center justify-between overflow-hidden rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_-8px_rgba(0,0,0,0.12)]"
+                  style={{ borderLeft: "4px solid #16a34a" }}
+                >
+                  <span aria-hidden className="absolute inset-x-0 top-0 h-[3px]" style={{ background: "#16a34a" }} />
+                  <div className="flex items-center gap-5">
+                    <span
+                      className="flex h-12 w-12 items-center justify-center rounded-xl text-white"
+                      style={{ background: "#16a34a", boxShadow: "0 4px 14px rgba(22,163,74,0.4)" }}
+                    >
+                      <Sparkles className="h-5 w-5" />
+                    </span>
+                    <div>
+                      <h3 className="text-strong font-display text-xl font-semibold tracking-tight">Study</h3>
+                      <p className="text-soft mt-1 text-sm">
+                        10 MCQs per session · {totalBank}-question pool · Retake for a fresh set
+                      </p>
+                    </div>
+                  </div>
+                  <span
+                    className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-white transition-transform group-hover:translate-x-0.5"
+                    style={{ background: "#16a34a" }}
+                  >
+                    Start
+                    <ArrowRight className="h-4 w-4" />
+                  </span>
+                </Link>
+              </div>
+            ) : (
+              <div
+                className="surface-card border-soft mt-10 rounded-2xl p-6"
+                style={{ borderLeft: "4px solid #16a34a" }}
+              >
+                <div className="flex items-center gap-3">
+                  <span
+                    className="flex h-11 w-11 items-center justify-center rounded-xl text-white"
+                    style={{
+                      background: "#16a34a",
+                      boxShadow: "0 4px 14px rgba(22, 163, 74, 0.4)",
+                    }}
+                  >
+                    <Sparkles className="h-5 w-5" />
+                  </span>
+                  <div>
+                    <h3 className="text-strong font-display text-xl font-semibold tracking-tight">
+                      No questions available
+                    </h3>
+                    <p className="text-soft mt-1 text-sm">
+                      This lesson is listed, but its quiz bank is empty.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </main>
@@ -112,76 +136,3 @@ export default async function TopicPage({
   );
 }
 
-function ModeCard({
-  title,
-  badge,
-  blurb,
-  icon,
-  accentBar,
-  iconBg,
-  glow,
-  href,
-  hint,
-  count,
-}: {
-  title: string;
-  badge: string;
-  blurb: string;
-  icon: React.ReactNode;
-  accentBar: string;
-  iconBg: string;
-  glow: string;
-  href: string;
-  hint: string;
-  count: number;
-}) {
-  return (
-    <Link
-      href={href}
-      className="surface-card border-soft group relative overflow-hidden rounded-2xl p-6 transition-all hover:-translate-y-1 hover:shadow-[0_12px_28px_-8px_rgba(0,0,0,0.12)]"
-      style={{ borderLeft: `4px solid ${accentBar}` }}
-    >
-      <div className="relative">
-        <div className="flex items-center justify-between">
-          <span
-            className="flex h-12 w-12 items-center justify-center rounded-xl text-white"
-            style={{
-              background: iconBg,
-              boxShadow: `0 4px 14px ${glow}`,
-            }}
-          >
-            {icon}
-          </span>
-          <span
-            className="rounded-full px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider"
-            style={{
-              background: `${accentBar}14`,
-              border: `1px solid ${accentBar}`,
-              color: accentBar,
-            }}
-          >
-            {badge}
-          </span>
-        </div>
-        <h3 className="text-strong mt-6 font-display text-2xl font-semibold tracking-tight">
-          {title}
-        </h3>
-        <p className="text-soft mt-2 text-sm">{blurb}</p>
-        <div className="mt-6 flex items-center justify-between">
-          <span className="text-soft inline-flex items-center gap-1.5 text-[11px]">
-            <Clock className="h-3 w-3" />
-            {hint}
-          </span>
-          <span
-            className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-transform group-hover:translate-x-0.5"
-            style={{ background: "#16a34a", color: "#ffffff" }}
-          >
-            Start
-            <ArrowRight className="h-3.5 w-3.5" />
-          </span>
-        </div>
-        <div className="sr-only">{count} questions</div>
-      </div>
-    </Link>
-  );
-}

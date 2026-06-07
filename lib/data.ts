@@ -8,8 +8,8 @@ export const topics: Topic[] = [
     emoji: "📈",
     description: "Segmentation, targeting, positioning, and the 4 Ps.",
     course: "MKT 301",
-    questionCount: 42,
-    masteredCount: 28,
+    questionCount: 0,
+    masteredCount: 0,
     estimatedMinutes: 18,
     color: "purple",
     updatedAt: "2026-05-04",
@@ -21,8 +21,8 @@ export const topics: Topic[] = [
     emoji: "🧾",
     description: "Balance sheets, income statements, and cash flow analysis.",
     course: "ACC 210",
-    questionCount: 36,
-    masteredCount: 12,
+    questionCount: 0,
+    masteredCount: 0,
     estimatedMinutes: 22,
     color: "blue",
     updatedAt: "2026-05-06",
@@ -34,8 +34,8 @@ export const topics: Topic[] = [
     emoji: "⚙️",
     description: "Lean, Six Sigma, capacity planning, and supply chains.",
     course: "OPS 320",
-    questionCount: 28,
-    masteredCount: 22,
+    questionCount: 0,
+    masteredCount: 0,
     estimatedMinutes: 14,
     color: "cyan",
     updatedAt: "2026-05-02",
@@ -47,8 +47,8 @@ export const topics: Topic[] = [
     emoji: "🧠",
     description: "Motivation theories, group dynamics, leadership styles.",
     course: "MGT 250",
-    questionCount: 31,
-    masteredCount: 18,
+    questionCount: 0,
+    masteredCount: 0,
     estimatedMinutes: 16,
     color: "pink",
     updatedAt: "2026-05-05",
@@ -60,8 +60,8 @@ export const topics: Topic[] = [
     emoji: "📊",
     description: "Supply, demand, elasticity, and market structures.",
     course: "ECO 102",
-    questionCount: 48,
-    masteredCount: 9,
+    questionCount: 0,
+    masteredCount: 0,
     estimatedMinutes: 26,
     color: "amber",
     updatedAt: "2026-05-01",
@@ -73,112 +73,15 @@ export const topics: Topic[] = [
     emoji: "🎲",
     description: "Probability, hypothesis testing, regression analysis.",
     course: "STA 215",
-    questionCount: 39,
-    masteredCount: 25,
+    questionCount: 0,
+    masteredCount: 0,
     estimatedMinutes: 20,
     color: "emerald",
     updatedAt: "2026-05-03",
   },
 ];
 
-export const questions: Question[] = [
-  {
-    id: "q1",
-    topicId: "t1",
-    prompt:
-      "A company segmenting customers by income, age, and education is using which type of segmentation?",
-    options: [
-      "Geographic segmentation",
-      "Demographic segmentation",
-      "Psychographic segmentation",
-      "Behavioral segmentation",
-    ],
-    correctIndex: 1,
-    explanation:
-      "Demographic segmentation groups customers by measurable population characteristics like age, income, gender, and education level.",
-    difficulty: "easy",
-    source: "Slide 14 · Chapter 3",
-  },
-  {
-    id: "q2",
-    topicId: "t1",
-    prompt:
-      "Which of the 4 Ps refers to the activities that communicate product value to customers?",
-    options: ["Product", "Price", "Place", "Promotion"],
-    correctIndex: 3,
-    explanation:
-      "Promotion includes advertising, public relations, sales promotions, and personal selling — anything that communicates value.",
-    difficulty: "easy",
-    source: "Slide 22 · Chapter 4",
-  },
-  {
-    id: "q3",
-    topicId: "t1",
-    prompt:
-      "A penetration pricing strategy is most appropriate when:",
-    options: [
-      "The product is highly differentiated and demand is inelastic",
-      "Competitors are few and brand prestige is critical",
-      "The market is price-sensitive and the firm seeks rapid market share",
-      "Costs decline slowly and economies of scale are weak",
-    ],
-    correctIndex: 2,
-    explanation:
-      "Penetration pricing sets a low initial price to win market share quickly. It works best when demand is elastic and scale economies reduce unit cost.",
-    difficulty: "medium",
-    source: "Slide 31 · Chapter 5",
-  },
-  {
-    id: "q4",
-    topicId: "t1",
-    prompt:
-      "In Porter's Five Forces, the threat of substitutes is highest when:",
-    options: [
-      "Switching costs are high and substitutes are inferior",
-      "Buyers have low price sensitivity",
-      "Substitutes offer better price-performance and switching costs are low",
-      "The industry has high entry barriers",
-    ],
-    correctIndex: 2,
-    explanation:
-      "Substitutes pressure profits when they offer attractive price-performance trade-offs and customers can switch cheaply.",
-    difficulty: "hard",
-    source: "Slide 47 · Chapter 7",
-  },
-  {
-    id: "q5",
-    topicId: "t1",
-    prompt: "The STP framework stands for:",
-    options: [
-      "Strategy, Tactics, Performance",
-      "Segmentation, Targeting, Positioning",
-      "Sales, Trade, Promotion",
-      "Survey, Test, Plan",
-    ],
-    correctIndex: 1,
-    explanation:
-      "STP — Segmentation, Targeting, Positioning — is the core marketing planning framework for matching offerings to customer groups.",
-    difficulty: "easy",
-    source: "Slide 9 · Chapter 2",
-  },
-  {
-    id: "q6",
-    topicId: "t1",
-    prompt:
-      "A 'Blue Ocean' strategy primarily focuses on:",
-    options: [
-      "Outcompeting rivals on cost in existing markets",
-      "Creating uncontested market space and making competition irrelevant",
-      "Acquiring competitors through M&A",
-      "Maximizing short-term profits via premium pricing",
-    ],
-    correctIndex: 1,
-    explanation:
-      "Blue Ocean Strategy (Kim & Mauborgne) is about value innovation — creating new demand in uncontested space rather than fighting in 'red oceans.'",
-    difficulty: "medium",
-    source: "Slide 53 · Chapter 8",
-  },
-];
+export const questions: Question[] = [];
 
 export const activities: Activity[] = [
   {

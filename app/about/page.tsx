@@ -47,7 +47,7 @@ type Member = {
 const stats: Stat[] = [
   { value: 2, label: "Semesters covered" },
   { value: 26, label: "Topics loaded", suffix: "+" },
-  { value: 260, label: "Practice questions", suffix: "+" },
+  { value: 376, label: "Practice questions" },
   { value: 10, label: "Questions per round" },
 ];
 

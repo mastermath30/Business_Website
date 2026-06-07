@@ -16,5 +16,6 @@ export default async function QuizPage({
   const topic = getTopic(id);
   if (!topic) notFound();
   const questions = getQuestionsForTopic(id, 8);
+  if (questions.length === 0) notFound();
   return <QuizRunner topic={topic} questions={questions} />;
 }
