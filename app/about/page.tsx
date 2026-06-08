@@ -41,6 +41,7 @@ type Member = {
   desc: string;
   school: string;
   photo: string;
+  photoClassName?: string;
   gradient: string;
 };
 
@@ -109,7 +110,8 @@ const team: Member[] = [
     role: "CO-DEVELOPER",
     desc: "Built the core quiz and study systems.",
     school: "Tesla STEM High School · Class of 2026",
-    photo: "",
+    photo: "/images/team/kogi.jpeg",
+    photoClassName: "scale-[1.22]",
     gradient: "bg-gradient-to-br from-teal-400 via-cyan-500 to-sky-600",
   },
   {
@@ -460,7 +462,7 @@ export default function AboutPage() {
                         alt={m.name}
                         fill
                         sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                        className="object-cover object-top"
+                        className={`object-cover object-top ${m.photoClassName ?? ""}`}
                       />
                     )}
                   </div>
