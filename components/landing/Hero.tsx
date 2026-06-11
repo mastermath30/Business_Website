@@ -6,7 +6,6 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Sparkles, CheckCircle2 } from "lucide-react";
 import gsap from "gsap";
 import { Magnetic } from "@/components/Magnetic";
-import { CountUp } from "@/components/CountUp";
 import { TypingHeadline } from "./TypingHeadline";
 import { SPRING_TAP } from "@/lib/animation";
 
@@ -234,310 +233,150 @@ export function Hero() {
   );
 }
 
+const QUIZ_OPTIONS = [
+  { letter: "A", text: "Demand is inelastic and the product is highly differentiated" },
+  { letter: "B", text: "The market is price-sensitive and the firm seeks rapid market share", correct: true },
+  { letter: "C", text: "Switching costs are low and competitors are exiting" },
+  { letter: "D", text: "Costs decline slowly and scale economies are weak" },
+];
+
 function HeroStudyPreview() {
   return (
     <div
       style={{
         transform: "rotateX(3deg) translateZ(0)",
         transformStyle: "preserve-3d",
-        background: "hsl(var(--background))",
-        border: "1px solid var(--surface-border)",
+        background: "linear-gradient(135deg, #0f1a12 0%, #0d1f17 55%, #0a1a1f 100%)",
+        border: "1px solid rgba(22,163,74,0.30)",
         boxShadow:
-          "0 30px 60px rgba(0, 0, 0, 0.10), 0 4px 16px rgba(0, 0, 0, 0.05)",
+          "0 30px 80px rgba(0,0,0,0.30), 0 4px 16px rgba(0,0,0,0.14), 0 0 60px rgba(22,163,74,0.08)",
       }}
-      className="relative rounded-[28px] p-2"
+      className="relative overflow-hidden rounded-[28px] p-6 md:p-10"
     >
+      {/* Ambient glows */}
       <div
-        className="overflow-hidden rounded-[20px]"
-        style={{ background: "var(--surface-1)", border: "1px solid var(--surface-border)" }}
-      >
-        {/* window chrome */}
+        aria-hidden
+        className="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full"
+        style={{ background: "radial-gradient(circle, rgba(22,163,74,0.20) 0%, transparent 70%)", filter: "blur(28px)" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-20 right-0 h-56 w-[500px] rounded-full"
+        style={{ background: "radial-gradient(circle, rgba(34,211,238,0.10) 0%, transparent 70%)", filter: "blur(28px)" }}
+      />
+
+      <div className="relative z-10 mx-auto max-w-2xl">
+        {/* Header bar */}
         <div
-          className="flex items-center justify-between px-4 py-2.5"
+          className="mb-4 flex items-center gap-3 rounded-2xl px-4 py-2.5"
           style={{
-            background: "hsl(var(--background))",
-            borderBottom: "1px solid var(--surface-border)",
+            background: "rgba(255,255,255,0.05)",
+            border: "1px solid rgba(255,255,255,0.09)",
           }}
         >
-          <div className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
-            <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
-            <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
-          </div>
-          <div
-            className="hidden items-center gap-1.5 rounded-full px-3 py-1 text-[11px] sm:flex"
+          <span
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 font-mono text-[11px] font-bold"
             style={{
-              background: "var(--surface-1)",
-              border: "1px solid var(--surface-border)",
-              color: "hsl(var(--muted-foreground))",
+              background: "rgba(22,163,74,0.15)",
+              border: "1px solid rgba(22,163,74,0.40)",
+              color: "#16a34a",
             }}
           >
             <span
               className="h-1.5 w-1.5 rounded-full"
-              style={{ background: "#8dc63f" }}
+              style={{ background: "#16a34a", boxShadow: "0 0 6px rgba(22,163,74,0.9)" }}
             />
-            app.businessboost.com/study
+            Marketing · Q4 / 10
+          </span>
+          <div className="relative h-2 flex-1 overflow-hidden rounded-full" style={{ background: "rgba(255,255,255,0.08)" }}>
+            <motion.div
+              initial={{ width: "20%" }}
+              animate={{ width: "40%" }}
+              transition={{ duration: 1.4, ease: "easeOut", delay: 1 }}
+              className="absolute inset-y-0 left-0 rounded-full"
+              style={{
+                background: "linear-gradient(90deg, #16a34a 0%, #22d3ee 100%)",
+                boxShadow: "0 0 10px rgba(22,163,74,0.5)",
+              }}
+            />
           </div>
-          <div className="h-5 w-12" />
+          <span className="font-mono text-[11px] font-bold tabular-nums" style={{ color: "rgba(255,255,255,0.50)" }}>
+            4<span style={{ color: "rgba(255,255,255,0.25)" }}>/10</span>
+          </span>
         </div>
 
-        <div className="grid gap-4 p-4 md:grid-cols-12 md:p-6">
-          {/* sidebar mini */}
-          <div className="hidden md:col-span-3 md:block">
-            <div
-              className="rounded-xl p-3"
-              style={{ background: "hsl(var(--background))", border: "1px solid var(--surface-border)" }}
-            >
-              <div
-                className="text-[10px] font-medium uppercase tracking-wider"
-                style={{ color: "hsl(var(--muted-foreground))" }}
-              >
-                Topics
-              </div>
-              <ul className="mt-3 space-y-1.5">
-                {[
-                  { label: "Marketing Strategy", active: true, p: 78 },
-                  { label: "Financial Accounting", p: 42 },
-                  { label: "Operations Mgmt", p: 92 },
-                  { label: "Org Behavior", p: 56 },
-                  { label: "Microeconomics", p: 18 },
-                ].map((t) => (
-                  <li
-                    key={t.label}
-                    className="flex items-center justify-between rounded-lg px-2 py-1.5 text-[11px]"
-                    style={
-                      t.active
-                        ? {
-                            background: "rgba(141, 198, 63, 0.12)",
-                            color: "#6fa832",
-                          }
-                        : { color: "hsl(var(--muted-foreground))" }
-                    }
-                  >
-                    <span className="truncate">{t.label}</span>
-                    <span>
-                      <CountUp value={t.p} duration={1.4} delay={1.6} />%
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+        {/* Quiz card */}
+        <div
+          className="rounded-2xl p-6 md:p-8"
+          style={{
+            background: "rgba(255,255,255,0.05)",
+            border: "1px solid rgba(255,255,255,0.10)",
+          }}
+        >
+          {/* Question number pill */}
+          <span
+            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-mono text-[11px] font-bold"
+            style={{
+              background: "rgba(22,163,74,0.12)",
+              border: "1px solid rgba(22,163,74,0.40)",
+              color: "#16a34a",
+            }}
+          >
+            Question 4 of 10
+          </span>
 
-          {/* center: quiz card */}
-          <div className="md:col-span-6">
-            <div
-              className="rounded-xl p-5"
-              style={{ background: "hsl(var(--background))", border: "1px solid var(--surface-border)" }}
-            >
-              <div className="flex items-center justify-between">
-                <div
-                  className="inline-flex items-center gap-2 rounded-full px-2.5 py-0.5 text-[10px]"
-                  style={{
-                    background: "rgba(141, 198, 63, 0.1)",
-                    border: "1px solid rgba(141, 198, 63, 0.4)",
-                    color: "#6fa832",
-                  }}
-                >
-                  Marketing · Q4 / 10
-                </div>
-                <div className="text-[11px]" style={{ color: "hsl(var(--muted-foreground))" }}>
-                  00:24
-                </div>
-              </div>
-              <div
-                className="mt-2.5 h-1 overflow-hidden rounded-full"
-                style={{ background: "var(--surface-border)" }}
-              >
-                <motion.div
-                  initial={{ width: "20%" }}
-                  animate={{ width: "40%" }}
-                  transition={{ duration: 1.4, ease: "easeOut", delay: 1 }}
-                  className="h-full"
-                  style={{
-                    background: "linear-gradient(90deg, #8dc63f, #2563a8)",
-                  }}
-                />
-              </div>
-              <h3
-                className="mt-5 text-[15px] font-medium leading-snug"
-                style={{ color: "hsl(var(--foreground))" }}
-              >
-                A penetration pricing strategy is most appropriate when:
-              </h3>
-              <ul className="mt-3.5 space-y-2">
-                {[
-                  "Demand is inelastic and the product is highly differentiated",
-                  "The market is price-sensitive and the firm seeks rapid market share",
-                  "Switching costs are low and competitors are exiting",
-                  "Costs decline slowly and scale economies are weak",
-                ].map((opt, i) => (
-                  <motion.li
-                    key={i}
-                    initial={{ opacity: 0, x: -6 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.4, delay: 0.9 + i * 0.07 }}
-                    className="flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-[12px]"
-                    style={
-                      i === 1
-                        ? {
-                            background: "rgba(141, 198, 63, 0.08)",
-                            border: "1px solid #8dc63f",
-                            color: "hsl(var(--foreground))",
-                          }
-                        : {
-                            background: "var(--surface-1)",
-                            border: "1px solid var(--surface-border)",
-                            color: "hsl(var(--foreground) / 0.75)",
-                          }
-                    }
-                  >
-                    <span className="flex items-center gap-2.5">
-                      <span
-                        className="flex h-5 w-5 items-center justify-center rounded-md text-[10px] font-medium"
-                        style={
-                          i === 1
-                            ? {
-                                background: "rgba(141, 198, 63, 0.22)",
-                                color: "#6fa832",
-                              }
-                            : { background: "var(--surface-border)", color: "hsl(var(--muted-foreground))" }
-                        }
-                      >
-                        {String.fromCharCode(65 + i)}
-                      </span>
-                      {opt}
-                    </span>
-                    {i === 1 && (
-                      <CheckCircle2
-                        className="h-3.5 w-3.5"
-                        style={{ color: "#8dc63f" }}
-                      />
-                    )}
-                  </motion.li>
-                ))}
-              </ul>
-            </div>
-          </div>
+          {/* Question text */}
+          <h3 className="mt-4 mb-5 text-base font-semibold leading-snug text-white md:text-lg">
+            A penetration pricing strategy is most appropriate when:
+          </h3>
 
-          {/* right: stats */}
-          <div className="grid grid-cols-2 gap-3 md:col-span-3 md:grid-cols-1">
-            <div
-              className="rounded-xl p-3.5"
-              style={{ background: "hsl(var(--background))", border: "1px solid var(--surface-border)" }}
-            >
-              <div
-                className="text-[10px] uppercase tracking-wider"
-                style={{ color: "hsl(var(--muted-foreground))" }}
+          {/* Answer options */}
+          <ul className="space-y-2.5">
+            {QUIZ_OPTIONS.map(({ letter, text, correct }, i) => (
+              <motion.li
+                key={letter}
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: 0.9 + i * 0.08 }}
+                className="flex items-center gap-3 rounded-xl border px-4 py-3 text-[13px] font-medium"
+                style={
+                  correct
+                    ? {
+                        borderColor: "rgba(22,163,74,0.60)",
+                        background: "rgba(22,163,74,0.12)",
+                        color: "#bbf7d0",
+                      }
+                    : {
+                        borderColor: "rgba(255,255,255,0.09)",
+                        background: "rgba(255,255,255,0.03)",
+                        color: "rgba(255,255,255,0.42)",
+                      }
+                }
               >
-                Streak
-              </div>
-              <div className="mt-1 flex items-baseline gap-1">
                 <span
-                  className="font-display text-2xl font-semibold tabular-nums"
-                  style={{ color: "hsl(var(--foreground))" }}
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[11px] font-bold"
+                  style={
+                    correct
+                      ? { background: "#16a34a", color: "#fff" }
+                      : { background: "rgba(255,255,255,0.09)", color: "rgba(255,255,255,0.35)" }
+                  }
                 >
-                  <CountUp value={12} duration={1.4} delay={1.6} />
+                  {letter}
                 </span>
-                <span
-                  className="text-[10px]"
-                  style={{ color: "hsl(var(--muted-foreground))" }}
-                >
-                  days
-                </span>
-              </div>
-              <div className="mt-2 flex gap-1">
-                {Array.from({ length: 7 }).map((_, i) => (
-                  <span
-                    key={i}
-                    className="h-1.5 flex-1 rounded-full"
-                    style={
-                      i < 5
-                        ? {
-                            background:
-                              "linear-gradient(90deg, #8dc63f, #2563a8)",
-                          }
-                        : { background: "var(--surface-border)" }
-                    }
-                  />
-                ))}
-              </div>
-            </div>
-            <div
-              className="rounded-xl p-3.5"
-              style={{ background: "hsl(var(--background))", border: "1px solid var(--surface-border)" }}
-            >
-              <div
-                className="text-[10px] uppercase tracking-wider"
-                style={{ color: "hsl(var(--muted-foreground))" }}
-              >
-                XP
-              </div>
-              <div
-                className="mt-1 font-display text-2xl font-semibold tabular-nums bg-clip-text text-transparent"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(135deg, #8dc63f, #2563a8)",
-                }}
-              >
-                <CountUp
-                  value={4820}
-                  duration={2.2}
-                  delay={1.8}
-                  format={(n) => n.toLocaleString()}
-                />
-              </div>
-              <div
-                className="mt-2 h-1 overflow-hidden rounded-full"
-                style={{ background: "var(--surface-border)" }}
-              >
-                <div
-                  className="h-full w-[68%]"
-                  style={{
-                    background: "linear-gradient(90deg, #8dc63f, #2563a8)",
-                  }}
-                />
-              </div>
-              <div
-                className="mt-1 text-[10px]"
-                style={{ color: "hsl(var(--muted-foreground))" }}
-              >
-                Lvl 14 · 180 to next
-              </div>
-            </div>
-            <div
-              className="col-span-2 rounded-xl p-3.5 md:col-span-1"
-              style={{ background: "hsl(var(--background))", border: "1px solid var(--surface-border)" }}
-            >
-              <div
-                className="text-[10px] uppercase tracking-wider"
-                style={{ color: "hsl(var(--muted-foreground))" }}
-              >
-                Accuracy
-              </div>
-              <div
-                className="mt-1 font-display text-2xl font-semibold tabular-nums"
-                style={{ color: "hsl(var(--foreground))" }}
-              >
-                <CountUp value={87} duration={1.6} delay={2.0} />
-                <span className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
-                  %
-                </span>
-              </div>
-              <div className="mt-2 flex h-7 items-end gap-1">
-                {[40, 55, 32, 70, 60, 82, 87].map((h, i) => (
-                  <span
-                    key={i}
-                    className="flex-1 rounded-sm"
-                    style={{
-                      height: `${h}%`,
-                      background:
-                        "linear-gradient(180deg, #8dc63f, #2563a8)",
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
+                <span className="flex-1 leading-snug">{text}</span>
+                {correct && (
+                  <CheckCircle2 className="h-4 w-4 shrink-0" style={{ color: "#16a34a" }} />
+                )}
+              </motion.li>
+            ))}
+          </ul>
+
+          {/* Next button */}
+          <div
+            className="mt-5 w-full rounded-xl py-3 text-center text-sm font-semibold text-white"
+            style={{ background: "#16a34a", boxShadow: "0 4px 16px rgba(22,163,74,0.35)" }}
+          >
+            Next question →
           </div>
         </div>
       </div>

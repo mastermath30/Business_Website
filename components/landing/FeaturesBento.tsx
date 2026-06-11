@@ -18,7 +18,6 @@ interface Step {
   body: string;
   iconGradient: string;
   span: "wide" | "narrow";
-  surface?: string;
 }
 
 const steps: Step[] = [
@@ -26,7 +25,7 @@ const steps: Step[] = [
     n: "1",
     icon: Calendar,
     title: "Choose your semester",
-    body: "Pick Semester 1 or Semester 2. Lecture decks for each course are pre-loaded — no setup, no syllabus dance. Open the term and get straight to studying.",
+    body: "Semester 1 or Semester 2, your choice. Each course already has its lecture decks loaded, so you can jump in immediately. No setup, no hunting for materials. Just open the semester and start studying.",
     iconGradient: "#16a34a",
     span: "wide",
   },
@@ -42,7 +41,7 @@ const steps: Step[] = [
     n: "3",
     icon: Sparkles,
     title: "Study mode · 10 questions",
-    body: "10 sharp MCQs per session — pulled from 25 questions stored per topic. Retake anytime for a fresh set.",
+    body: "10 MCQs per session. Retake anytime for a fresh set.",
     iconGradient: "#16a34a",
     span: "narrow",
   },
@@ -86,15 +85,6 @@ export function FeaturesBento() {
         >
           Studying that actually sticks.
         </motion.h2>
-        <motion.p
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.16, ease: EASE_OUT_CUBIC }}
-          className="mx-auto mt-4 max-w-2xl text-balance text-lg text-muted-foreground"
-        >
-          Four moves, dialed-in for retention. No clutter — just the loop that
-          gets you exam-ready.
-        </motion.p>
       </div>
 
       {/* Bento grid with decorative gradient line on left */}
@@ -125,6 +115,7 @@ export function FeaturesBento() {
     </section>
   );
 }
+
 
 function BentoCard({
   step,
@@ -166,13 +157,11 @@ function BentoCard({
         e.currentTarget.style.boxShadow = "none";
       }}
     >
-      {/* subtle top highlight on hover */}
       <span
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-px rounded-t-[20px] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{ background: "rgba(22, 163, 74, 0.5)" }}
       />
-      {/* decorative giant step number — light watermark */}
       <span
         aria-hidden
         className="pointer-events-none absolute right-4 top-2 z-0 select-none font-display text-[80px] font-black leading-none md:text-[96px]"
